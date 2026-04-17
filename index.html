@@ -42,9 +42,9 @@
   /* ── SUMMARY CARDS ── */
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
-    margin-bottom: 36px;
+    margin-bottom: 20px;
   }
 
   .summary-card {
@@ -185,6 +185,46 @@
   .i-pmgmt   { background: #F5F0FD; color: #7C3AED; }
   .i-generic { background: #E5E5EA; color: #6E6E73; }
 
+  /* ── PLUGINS PILLS ── */
+  .plugins-section {
+    margin-bottom: 36px;
+  }
+  .plugins-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #AEAEB2;
+    margin-bottom: 10px;
+  }
+  .plugins-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .plugin-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #FFFFFF;
+    border: 1.5px solid #E5E5EA;
+    border-radius: 999px;
+    padding: 6px 14px 6px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1D1D1F;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    cursor: default;
+  }
+  .plugin-pill:hover {
+    border-color: #0D9488;
+    box-shadow: 0 2px 8px rgba(13,148,136,0.10);
+  }
+  .plugin-pill-icon {
+    font-size: 14px;
+    line-height: 1;
+  }
+
   /* apps */
   .apps-list { display: flex; flex-direction: column; gap: 8px; }
 
@@ -239,15 +279,25 @@
       <div class="sc-title">Skills Pessoais</div>
       <div class="sc-sub">6 skills criadas por você</div>
     </div>
-    <div class="summary-card" data-target="plugins">
-      <div class="sc-icon">🧩</div>
-      <div class="sc-title">Plugins</div>
-      <div class="sc-sub">8 plugins do marketplace</div>
-    </div>
     <div class="summary-card" data-target="apps">
       <div class="sc-icon">🔗</div>
       <div class="sc-title">Apps Conectados</div>
       <div class="sc-sub">9 serviços integrados</div>
+    </div>
+  </div>
+
+  <!-- PLUGINS PILLS -->
+  <div class="plugins-section">
+    <div class="plugins-label">🧩 Plugins do Marketplace</div>
+    <div class="plugins-pills">
+      <div class="plugin-pill"><span class="plugin-pill-icon">📋</span>productivity</div>
+      <div class="plugin-pill"><span class="plugin-pill-icon">🔊</span>brand-voice</div>
+      <div class="plugin-pill"><span class="plugin-pill-icon">📣</span>marketing</div>
+      <div class="plugin-pill"><span class="plugin-pill-icon">💰</span>sales</div>
+      <div class="plugin-pill"><span class="plugin-pill-icon">🗺️</span>product-management</div>
+      <div class="plugin-pill"><span class="plugin-pill-icon">✏️</span>design</div>
+      <div class="plugin-pill"><span class="plugin-pill-icon">📑</span>pdf-viewer</div>
+      <div class="plugin-pill"><span class="plugin-pill-icon">🧩</span>cowork-plugin-management</div>
     </div>
   </div>
 
@@ -373,196 +423,6 @@
     </div>
 
   </div><!-- /panel-skills -->
-
-  <!-- ═══════════════════════════════════════
-       PANEL: PLUGINS
-  ════════════════════════════════════════ -->
-  <div class="panel" id="panel-plugins">
-    <div class="back-btn" id="back-plugins">↑ Voltar</div>
-    <div class="section-title">Plugins do Marketplace</div>
-
-    <div class="acc-item">
-      <div class="acc-header">
-        <div class="acc-icon i-prod">📋</div>
-        <div class="acc-label">
-          <div class="acc-name">productivity</div>
-          <div class="acc-tagline">Tarefas e memória de trabalho</div>
-        </div>
-        <div class="acc-chevron">▼</div>
-      </div>
-      <div class="acc-body">
-        <div class="acc-desc">Mantém seu TASKS.md atualizado e aprende seu vocabulário de trabalho: siglas, nomes de projetos, apelidos de pessoas. Quanto mais você usa, mais o Claude entende seu contexto.</div>
-        <div class="trigger-label">Sub-skills</div>
-        <div class="sub-skills">
-          <span class="sub-skill">start — inicializa o sistema</span>
-          <span class="sub-skill">task-management — gerencia TASKS.md</span>
-          <span class="sub-skill">memory-management — aprende seu vocabulário</span>
-          <span class="sub-skill">update — sincroniza e atualiza</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="acc-item">
-      <div class="acc-header">
-        <div class="acc-icon i-brand">🔊</div>
-        <div class="acc-label">
-          <div class="acc-name">brand-voice</div>
-          <div class="acc-tagline">Voz de marca — descoberta, diretrizes e aplicação</div>
-        </div>
-        <div class="acc-chevron">▼</div>
-      </div>
-      <div class="acc-body">
-        <div class="acc-desc">Descobre materiais de marca nos seus apps conectados, gera diretrizes de voz a partir de documentos e transcrições, e aplica esse tom em qualquer conteúdo novo.</div>
-        <div class="trigger-label">Sub-skills</div>
-        <div class="sub-skills">
-          <span class="sub-skill">brand-voice-enforcement — aplica tom no conteúdo</span>
-          <span class="sub-skill">discover-brand — encontra materiais de marca</span>
-          <span class="sub-skill">guideline-generation — gera diretrizes</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="acc-item">
-      <div class="acc-header">
-        <div class="acc-icon i-mkt">📣</div>
-        <div class="acc-label">
-          <div class="acc-name">marketing</div>
-          <div class="acc-tagline">Conteúdo, campanhas, email e SEO</div>
-        </div>
-        <div class="acc-chevron">▼</div>
-      </div>
-      <div class="acc-body">
-        <div class="acc-desc">Cria conteúdo para todos os canais, planeja campanhas, escreve sequências de email, faz auditorias de SEO e relatórios de performance.</div>
-        <div class="trigger-label">Sub-skills</div>
-        <div class="sub-skills">
-          <span class="sub-skill">content-creation</span>
-          <span class="sub-skill">draft-content</span>
-          <span class="sub-skill">email-sequence</span>
-          <span class="sub-skill">campaign-plan</span>
-          <span class="sub-skill">seo-audit</span>
-          <span class="sub-skill">brand-review</span>
-          <span class="sub-skill">competitive-brief</span>
-          <span class="sub-skill">performance-report</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="acc-item">
-      <div class="acc-header">
-        <div class="acc-icon i-sales">💰</div>
-        <div class="acc-label">
-          <div class="acc-name">sales</div>
-          <div class="acc-tagline">Prospecção, calls e pipeline</div>
-        </div>
-        <div class="acc-chevron">▼</div>
-      </div>
-      <div class="acc-body">
-        <div class="acc-desc">Pesquisa contas e prospects, prepara calls, resume reuniões, cria outreach personalizado, analisa pipeline e gera previsões de vendas.</div>
-        <div class="trigger-label">Sub-skills</div>
-        <div class="sub-skills">
-          <span class="sub-skill">account-research</span>
-          <span class="sub-skill">call-prep</span>
-          <span class="sub-skill">call-summary</span>
-          <span class="sub-skill">draft-outreach</span>
-          <span class="sub-skill">competitive-intelligence</span>
-          <span class="sub-skill">daily-briefing</span>
-          <span class="sub-skill">forecast</span>
-          <span class="sub-skill">pipeline-review</span>
-          <span class="sub-skill">create-an-asset</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="acc-item">
-      <div class="acc-header">
-        <div class="acc-icon i-pm">🗺️</div>
-        <div class="acc-label">
-          <div class="acc-name">product-management</div>
-          <div class="acc-tagline">Specs, roadmap, sprints e métricas</div>
-        </div>
-        <div class="acc-chevron">▼</div>
-      </div>
-      <div class="acc-body">
-        <div class="acc-desc">Escreve especificações de produto, atualiza roadmaps, planeja sprints, sintetiza pesquisa de usuários, revisa métricas e gera updates para stakeholders.</div>
-        <div class="trigger-label">Sub-skills</div>
-        <div class="sub-skills">
-          <span class="sub-skill">write-spec</span>
-          <span class="sub-skill">roadmap-update</span>
-          <span class="sub-skill">sprint-planning</span>
-          <span class="sub-skill">metrics-review</span>
-          <span class="sub-skill">product-brainstorming</span>
-          <span class="sub-skill">competitive-brief</span>
-          <span class="sub-skill">synthesize-research</span>
-          <span class="sub-skill">stakeholder-update</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="acc-item">
-      <div class="acc-header">
-        <div class="acc-icon i-design">✏️</div>
-        <div class="acc-label">
-          <div class="acc-name">design</div>
-          <div class="acc-tagline">Crítica, acessibilidade, handoff e UX copy</div>
-        </div>
-        <div class="acc-chevron">▼</div>
-      </div>
-      <div class="acc-body">
-        <div class="acc-desc">Dá feedback estruturado sobre designs, audita acessibilidade (WCAG 2.1 AA), gera specs para dev, documenta sistemas de design e escreve UX copy.</div>
-        <div class="trigger-label">Sub-skills</div>
-        <div class="sub-skills">
-          <span class="sub-skill">design-critique</span>
-          <span class="sub-skill">accessibility-review</span>
-          <span class="sub-skill">design-handoff</span>
-          <span class="sub-skill">design-system</span>
-          <span class="sub-skill">ux-copy</span>
-          <span class="sub-skill">user-research</span>
-          <span class="sub-skill">research-synthesis</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="acc-item">
-      <div class="acc-header">
-        <div class="acc-icon i-pdf">📑</div>
-        <div class="acc-label">
-          <div class="acc-name">pdf-viewer</div>
-          <div class="acc-tagline">Visualização interativa de PDFs</div>
-        </div>
-        <div class="acc-chevron">▼</div>
-      </div>
-      <div class="acc-body">
-        <div class="acc-desc">Abre PDFs de forma interativa direto no Claude para anotar, assinar, preencher formulários e fazer revisões colaborativas.</div>
-        <div class="trigger-label">Sub-skills</div>
-        <div class="sub-skills">
-          <span class="sub-skill">view-pdf — abrir e visualizar</span>
-          <span class="sub-skill">annotate — anotar e marcar</span>
-          <span class="sub-skill">sign — assinar</span>
-          <span class="sub-skill">fill-form — preencher formulários</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="acc-item">
-      <div class="acc-header">
-        <div class="acc-icon i-pmgmt">🧩</div>
-        <div class="acc-label">
-          <div class="acc-name">cowork-plugin-management</div>
-          <div class="acc-tagline">Cria e personaliza plugins</div>
-        </div>
-        <div class="acc-chevron">▼</div>
-      </div>
-      <div class="acc-body">
-        <div class="acc-desc">Guia a criação de plugins do zero ou personaliza plugins existentes para o seu fluxo de trabalho específico. Gera o arquivo .plugin final.</div>
-        <div class="trigger-label">Sub-skills</div>
-        <div class="sub-skills">
-          <span class="sub-skill">create-cowork-plugin — criar novo plugin</span>
-          <span class="sub-skill">cowork-plugin-customizer — personalizar plugin</span>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /panel-plugins -->
 
   <!-- ═══════════════════════════════════════
        PANEL: APPS
@@ -720,7 +580,7 @@
     });
   });
 
-  ['skills', 'plugins', 'apps'].forEach(name => {
+  ['skills', 'apps'].forEach(name => {
     document.getElementById('back-' + name).addEventListener('click', () => {
       document.getElementById('panel-' + name).classList.remove('open');
       document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
