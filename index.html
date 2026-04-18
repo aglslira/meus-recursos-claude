@@ -736,6 +736,21 @@
   }
   .sec-external-link:hover { background: #E5E5EA; }
 
+  /* Auto-fix summary block */
+  .sec-autofix {
+    background: #DFF5E6; border: 1px solid #9FD9B0;
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 14px;
+  }
+  .sec-autofix-title {
+    font-size: 14px; font-weight: 700; color: #1A6E3A;
+    margin-bottom: 6px;
+  }
+  .sec-autofix-list {
+    margin: 0; padding-left: 18px; font-size: 13px;
+    color: #1C1C1E; line-height: 1.5;
+  }
+  .sec-autofix-list li { margin-bottom: 2px; }
+
   /* Referências panel */
   .refs-header {
     background: #FFF7F0;
@@ -2701,7 +2716,32 @@ Em construção · revisão do produto.`,
 
     const s = data.summary || {};
     const total = (s.critical || 0) + (s.warning || 0) + (s.info || 0) + (s.ok || 0) + (s.error || 0);
-    let html = '<div class="sec-summary">';
+    let html = '';
+
+    // Auto-fix summary at top (if any action happened)
+    const af = data.autoFix;
+    if (af && (af.applied?.length || af.failed?.length)) {
+      html += '<div class="sec-autofix">';
+      if (af.applied?.length) {
+        html += `<div class="sec-autofix-title">🤖 Corrigi ${af.applied.length} item(ns) automaticamente</div>`;
+        html += '<ul class="sec-autofix-list">';
+        for (const a of af.applied) {
+          html += `<li><strong>${escapeHtmlSec(a.project)}</strong> — ${escapeHtmlSec(a.target || a.category)}: ${escapeHtmlSec(a.description || 'corrigido')}</li>`;
+        }
+        html += '</ul>';
+      }
+      if (af.failed?.length) {
+        html += `<div class="sec-autofix-title" style="color:#A42820; margin-top:10px;">⚠️ ${af.failed.length} correção(ões) falharam</div>`;
+        html += '<ul class="sec-autofix-list">';
+        for (const f of af.failed) {
+          html += `<li><strong>${escapeHtmlSec(f.project)}</strong> — ${escapeHtmlSec(f.target)}: ${escapeHtmlSec(f.error)}</li>`;
+        }
+        html += '</ul>';
+      }
+      html += '</div>';
+    }
+
+    html += '<div class="sec-summary">';
     html += `<span class="sec-summary-badge critical" data-filter="critical">🔴 ${s.critical || 0} críticos</span>`;
     html += `<span class="sec-summary-badge warning" data-filter="warning">🟡 ${s.warning || 0} avisos</span>`;
     html += `<span class="sec-summary-badge info" data-filter="info">ℹ️ ${s.info || 0} info</span>`;
@@ -2791,24 +2831,33 @@ Em construção · revisão do produto.`,
     securityBtn.addEventListener('click', async () => {
       securityBtn.classList.add('loading');
       securityBtn.textContent = '⏳ Auditando…';
-      showSecurityProgress('Descobrindo recursos em Vercel, GitHub, Supabase');
+      showSecurityProgress('Corrigindo o que posso automaticamente');
 
+      let fixResult = null;
       try {
-        // Run client scans + API call + CORS check in parallel
+        // Step 1: auto-fix what we can (safe whitelist)
+        try {
+          const fixRes = await fetch('/api/security-fix', { method: 'POST' });
+          if (fixRes.ok) fixResult = await fixRes.json();
+        } catch (e) {
+          console.warn('[security-fix] failed (continuando com scan):', e);
+        }
+
+        // Step 2: update progress + run scan
+        showSecurityProgress('Escaneando Vercel, GitHub, Supabase, Observatory');
         const clientChecks = runClientScans();
         const [secRes, corsCheck] = await Promise.all([
           fetch('/api/security').then(r => r.ok ? r.json() : Promise.reject('HTTP ' + r.status)),
           checkCorsOnRefresh(),
         ]);
 
-        // Merge client checks into the response
         secRes.checks = [...(secRes.checks || []), ...clientChecks, corsCheck];
-        // Recompute summary
         const summary = { critical: 0, warning: 0, info: 0, ok: 0, error: 0 };
         for (const c of secRes.checks) {
           if (summary[c.status] !== undefined) summary[c.status]++;
         }
         secRes.summary = summary;
+        secRes.autoFix = fixResult;
 
         renderSecurityResults(secRes);
       } catch (err) {

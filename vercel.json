@@ -7,6 +7,9 @@
     },
     "api/security.js": {
       "maxDuration": 30
+    },
+    "api/security-fix.js": {
+      "maxDuration": 30
     }
   }
 }
