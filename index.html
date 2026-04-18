@@ -361,6 +361,114 @@
   /* teal accent nos detalhes */
   .teal { color: #0D9488; }
 
+  /* ── SKILL MODAL ── */
+  .skill-modal-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(3px);
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .skill-modal-overlay.open { display: flex; }
+
+  .skill-modal {
+    background: #FFFFFF;
+    border-radius: 16px;
+    width: 100%; max-width: 680px;
+    max-height: 85vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+    overflow: hidden;
+    animation: modalIn 0.18s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.97) translateY(8px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0); }
+  }
+
+  .skill-modal-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 22px 24px 18px;
+    border-bottom: 1px solid #E5E5EA;
+    flex-shrink: 0;
+  }
+  .skill-modal-icon {
+    width: 42px; height: 42px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .skill-modal-title { flex: 1; }
+  .skill-modal-name { font-size: 17px; font-weight: 700; color: #1D1D1F; }
+  .skill-modal-tagline { font-size: 13px; color: #6E6E73; margin-top: 2px; }
+  .skill-modal-close {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #F2F2F7; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #6E6E73; flex-shrink: 0;
+    transition: background 0.15s, color 0.15s;
+  }
+  .skill-modal-close:hover { background: #E5E5EA; color: #1D1D1F; }
+
+  .skill-modal-body {
+    overflow-y: auto; padding: 28px 32px 32px;
+    line-height: 1.75; color: #1D1D1F;
+    font-size: 15px;
+  }
+
+  /* Tipografia docs dentro do modal */
+  .skill-modal-body h1 { font-size: 22px; font-weight: 700; margin: 0 0 16px; color: #1D1D1F; }
+  .skill-modal-body h2 { font-size: 17px; font-weight: 700; margin: 28px 0 10px; color: #1D1D1F; border-bottom: 1px solid #E5E5EA; padding-bottom: 6px; }
+  .skill-modal-body h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; color: #1D1D1F; }
+  .skill-modal-body p  { margin: 0 0 12px; color: #3A3A3C; }
+  .skill-modal-body ul, .skill-modal-body ol { padding-left: 22px; margin: 0 0 12px; color: #3A3A3C; }
+  .skill-modal-body li { margin-bottom: 5px; }
+  .skill-modal-body strong { color: #1D1D1F; font-weight: 600; }
+  .skill-modal-body em { font-style: italic; color: #6E6E73; }
+  .skill-modal-body code {
+    background: #F2F2F7; border-radius: 5px;
+    padding: 2px 6px; font-family: 'SF Mono', monospace;
+    font-size: 13px; color: #E8611A;
+  }
+  .skill-modal-body pre {
+    background: #F2F2F7; border-radius: 10px;
+    padding: 14px 16px; margin: 0 0 14px;
+    overflow-x: auto; font-size: 13px; line-height: 1.55;
+  }
+  .skill-modal-body pre code { background: none; padding: 0; color: #1D1D1F; font-size: 13px; }
+  .skill-modal-body blockquote {
+    border-left: 3px solid #E8611A;
+    margin: 0 0 14px; padding: 8px 16px;
+    background: #FEF0E6; border-radius: 0 8px 8px 0;
+    color: #6E6E73; font-style: italic;
+  }
+  .skill-modal-body table {
+    width: 100%; border-collapse: collapse; margin: 0 0 16px;
+    font-size: 13px;
+  }
+  .skill-modal-body th {
+    background: #F2F2F7; font-weight: 600; text-align: left;
+    padding: 8px 12px; border-bottom: 2px solid #E5E5EA; color: #1D1D1F;
+  }
+  .skill-modal-body td {
+    padding: 8px 12px; border-bottom: 1px solid #E5E5EA; color: #3A3A3C;
+  }
+  .skill-modal-body tr:last-child td { border-bottom: none; }
+
+  .skill-modal-hint {
+    font-size: 11px; color: #AEAEB2; text-align: center;
+    padding: 6px 0 0; flex-shrink: 0;
+    border-top: 1px solid #F2F2F7;
+  }
+
+  /* double-click hint no acc-item de skills */
+  .acc-item[data-skill] { cursor: pointer; }
+  .acc-item[data-skill] .acc-name::after {
+    content: " · duplo clique para ler";
+    font-size: 10px; font-weight: 400;
+    color: #AEAEB2; margin-left: 6px;
+  }
+
   footer {
     margin-top: 48px;
     text-align: center;
@@ -595,7 +703,7 @@
     <div class="back-btn" id="back-skills">↑ Voltar</div>
     <div class="section-title">Skills Pessoais</div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="maxxima-anti-caos">
       <div class="acc-header">
         <div class="acc-icon i-maxxima">🔥</div>
         <div class="acc-label">
@@ -615,7 +723,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="sprint-educator">
       <div class="acc-header">
         <div class="acc-icon i-sprint">🎓</div>
         <div class="acc-label">
@@ -634,7 +742,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="skill-creator">
       <div class="acc-header">
         <div class="acc-icon i-scr">⚙️</div>
         <div class="acc-label">
@@ -652,7 +760,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="docs">
       <div class="acc-header">
         <div class="acc-icon i-docs">📄</div>
         <div class="acc-label">
@@ -673,7 +781,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="canvas-design">
       <div class="acc-header">
         <div class="acc-icon i-design">🎨</div>
         <div class="acc-label">
@@ -691,7 +799,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="schedule">
       <div class="acc-header">
         <div class="acc-icon i-generic">⏰</div>
         <div class="acc-label">
@@ -709,7 +817,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="disc-assessment">
       <div class="acc-header">
         <div class="acc-icon" style="background:#EAF0FD;color:#2563EB;">🎯</div>
         <div class="acc-label">
@@ -727,7 +835,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="disc-jovens">
       <div class="acc-header">
         <div class="acc-icon" style="background:#FDE8F0;color:#DB2777;">⚡</div>
         <div class="acc-label">
@@ -745,7 +853,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="success-insights">
       <div class="acc-header">
         <div class="acc-icon" style="background:#EDFAF7;color:#059669;">🔵</div>
         <div class="acc-label">
@@ -763,7 +871,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="softskills-assessments">
       <div class="acc-header">
         <div class="acc-icon" style="background:#F0EBF8;color:#7C3AED;">📚</div>
         <div class="acc-label">
@@ -781,7 +889,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="mentoria">
       <div class="acc-header">
         <div class="acc-icon" style="background:#E6F4FD;color:#0284C7;">🤝</div>
         <div class="acc-label">
@@ -799,7 +907,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="ideias-score">
       <div class="acc-header">
         <div class="acc-icon" style="background:#FEFCE8;color:#D97706;">💡</div>
         <div class="acc-label">
@@ -817,7 +925,7 @@
       </div>
     </div>
 
-    <div class="acc-item">
+    <div class="acc-item" data-skill="plano-mvp-prd">
       <div class="acc-header">
         <div class="acc-icon" style="background:#E5E5EA;color:#1D1D1F;">🗂️</div>
         <div class="acc-label">
@@ -1119,6 +1227,22 @@
 
   </div><!-- /panel-repos -->
 
+  <!-- SKILL MODAL -->
+  <div class="skill-modal-overlay" id="skillModal">
+    <div class="skill-modal">
+      <div class="skill-modal-header">
+        <div class="skill-modal-icon" id="modalIcon"></div>
+        <div class="skill-modal-title">
+          <div class="skill-modal-name" id="modalName"></div>
+          <div class="skill-modal-tagline" id="modalTagline"></div>
+        </div>
+        <button class="skill-modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="skill-modal-body" id="modalBody"></div>
+      <div class="skill-modal-hint">Pressione Esc para fechar</div>
+    </div>
+  </div>
+
   <footer>
     André <span class="footer-dot"></span> softskills.com.br <span class="footer-dot"></span> abril 2026
   </footer>
@@ -1156,6 +1280,194 @@
       header.closest('.acc-item').classList.toggle('open');
     });
   });
+
+  // ── SKILL MODAL ───────────────────────────────────────────────────────────
+
+  const SKILLS_DATA = {
+    'maxxima-anti-caos': {
+      icon: '🔥', iconStyle: 'background:#FFF1E6;color:#E8611A;',
+      name: 'Maxxima Anti-Caos',
+      tagline: 'Copy, funil e estratégia da Comunidade Líder Anti-Caos',
+      content: `## O que faz\n\nSkill completa do sistema Maxxima. Conhece todos os elementos do produto, persona, funil e tom de comunicação da Comunidade Líder Anti-Caos. É a parceira de copy e estratégia para o APP.\n\n## Quando ativa automaticamente\n\n- Qualquer pedido de copy — landing page, VSL, email, post, ad, CTA\n- Quando você menciona: **Wi-Fi Humano**, **C.I.C.L.O.**, **Kit do Líder**, **Plano Fibra**, **Semana Anti-Caos**, **Mesa de Cinco**, **ruminação mental**\n- Perguntas estratégicas sobre produto, persona, preço ou funil\n\n## Princípio central\n\nA pessoa compra a **oferta**, não o produto. A copy toca na ruminação mental da persona — o que ela repete na cabeça antes de comprar. A promessa deve ser direta, um CTA, zero distrações.\n\n## Método ILM (Imersão Low Ticket Milionário)\n\n1. Definir a **Persona** e seu Diálogo Interno\n2. Criar o **Nome** — Gancho + Conexão + Palavra-chave + Fechamento\n3. Definir a **Promessa** — resultado claro em 1 frase\n4. Identificar o **Mecanismo Único Tangível**\n5. Escrever a copy **P.R.S-A** — Problema → Rota → Solução → Ação\n\n## Regras de ouro\n\n- NÃO coloque vídeo de vendas na página\n- NÃO coloque botão de WhatsApp flutuante\n- NÃO coloque links de fuga (redes sociais)\n- A página tem UM ÚNICO OBJETIVO: a venda\n\n## Como usar\n\nDescreva o que precisa (post, email, landing page) e para qual produto ou etapa do funil. A skill entrega o texto seguindo o Método ILM e o tom da marca Anti-Caos.`
+    },
+    'sprint-educator': {
+      icon: '🎓', iconStyle: 'background:#EDE9FE;color:#7C3AED;',
+      name: 'Sprint Educator',
+      tagline: 'Sprints educacionais de liderança, soft skills e negócios',
+      content: `## O que faz\n\nTransforma qualquer tema em um sprint educacional prático e de alto valor — no formato low ticket do Método Maxxima. Gera planos, one pages, exercícios, slides e PDFs.\n\n## Quando ativa automaticamente\n\n- Você pede ideias de cursos, aulas, sprints, one pages ou exercícios\n- Você diz *"cria uma aula sobre X"* ou *"quero criar um produto"*\n- Qualquer pedido de material didático, framework ou plano de aula\n\n## Estrutura padrão de um sprint\n\n- **3 módulos de ~15 minutos** — cada um resolve uma dor específica\n- **One page por módulo** — 20% teoria, 80% o aluno fazendo\n- **Compromisso de saída** — toda one page termina com data e ação concreta\n- **Preço sugerido:** R$ 37–R$ 97\n\n## 4 Zonas da One Page\n\n| Zona | Posição | Conteúdo |\n|------|---------|----------|\n| 1 — Contexto | Canto superior esq. | Nome + teoria em 2 frases |\n| 2 — Instrução | Cabeçalhos | Perguntas instigantes |\n| 3 — Trabalho | Centro (80%) | Espaços para preencher |\n| 4 — Compromisso | Rodapé | Primeiro passo + data |\n\n## Atalhos\n\n- *"Plano completo"* — gera tudo (plano + one pages + slides) sem perguntas\n- *"Me dê ideias"* — gera 3 sugestões de sprints com nome, promessa e preço\n\n## Como usar\n\nDiga o tema e o que quer gerar. Para tudo de uma vez, diga **"plano completo"** e o tema.`
+    },
+    'skill-creator': {
+      icon: '⚙️', iconStyle: 'background:#F0FDF4;color:#16A34A;',
+      name: 'Skill Creator',
+      tagline: 'Cria, edita e testa skills do Claude',
+      content: `## O que faz\n\nFerramenta especializada em construir e melhorar as próprias skills do Claude. Faz avaliações de performance, testa variações e otimiza triggers para a skill ativar no momento certo.\n\n## Quando ativar\n\n- *"Cria uma nova skill"* — define estrutura, triggers, fluxo de execução\n- *"Melhora essa skill"* — analisa e reescreve seções fracas\n- *"Testa o desempenho da skill X"* — simula inputs e avalia respostas\n- *"Otimiza os triggers de..."* — melhora quando a skill é ativada\n\n## O que entrega\n\n- Arquivo **SKILL.md** completo e pronto para uso\n- Triggers calibrados (o que ativa a skill)\n- Fluxo de execução passo a passo\n- Testes integrados para validar comportamento\n\n## Como usar\n\nDescreva o que a skill deve fazer, para quem e o que dispara sua ativação. O Skill Creator entrevista você, monta a estrutura e salva o arquivo no diretório correto.`
+    },
+    'docs': {
+      icon: '📄', iconStyle: 'background:#EFF6FF;color:#2563EB;',
+      name: 'Docs · PDF · PPTX · XLSX',
+      tagline: 'Documentos, apresentações e planilhas profissionais',
+      content: `## O que faz\n\nQuatro skills de criação de arquivos profissionais — cada uma ativa automaticamente quando você menciona o tipo de arquivo ou pede algo específico.\n\n## 📝 DOCX — Documentos Word\n\n**Ativa quando:** Word, relatório, memo, carta, .docx, documento\n**Entrega:** arquivo .docx com formatação profissional, pronto para editar\n\n## 📑 PDF — Criação e manipulação\n\n**Ativa quando:** criar PDF, extrair páginas, mesclar, assinar, preencher formulário\n**Entrega:** arquivo PDF pronto para envio ou publicação\n\n## 📊 PPTX — Apresentações\n\n**Ativa quando:** slides, deck, apresentação, PowerPoint\n**Entrega:** arquivo .pptx com layout e conteúdo estruturado\n\n## 📈 XLSX — Planilhas\n\n**Ativa quando:** planilha, tabela, Excel, orçamento, dados\n**Entrega:** arquivo .xlsx com fórmulas e formatação\n\n## Como usar\n\nDescreva o que precisa e mencione o tipo de arquivo. A skill certa ativa sozinha e gera o arquivo no seu computador.`
+    },
+    'canvas-design': {
+      icon: '🎨', iconStyle: 'background:#FFF0F3;color:#E11D48;',
+      name: 'Canvas Design',
+      tagline: 'Arte visual em PNG e PDF',
+      content: `## O que faz\n\nCria designs originais — posters, peças gráficas, artes para redes sociais, capas e materiais visuais. Usa princípios de design (hierarquia, contraste, espaçamento) para criar artes prontas para uso.\n\n## Quando ativar\n\n- *"Cria um post para o Instagram"*\n- *"Faz uma capa para o meu curso"*\n- *"Quero um poster sobre X"*\n- Qualquer pedido de arte, banner, imagem ou peça gráfica\n\n## O que entrega\n\n- Arquivo PNG (alta resolução) ou PDF\n- Design original criado com código\n- Visual consistente com sua identidade de marca\n\n## Como usar\n\nDescreva: tipo de peça, texto principal, cores e onde vai ser usada. Quanto mais detalhes, melhor o resultado.\n\n> **Dica:** Se quiser sua identidade visual exata (dourado #c9a84c, preto #1d1d1f, fontes Typo Round + Montserrat), mencione *"identidade Kit do Líder"* no pedido.`
+    },
+    'schedule': {
+      icon: '📅', iconStyle: 'background:#F0FDF4;color:#0D9488;',
+      name: 'Schedule',
+      tagline: 'Tarefas programadas e automações recorrentes',
+      content: `## O que faz\n\nCria, gerencia e executa tarefas automáticas em horários definidos. Usa o sistema de Scheduled Tasks do Claude para rodar agentes de forma recorrente — sem você precisar pedir.\n\n## Quando ativar\n\n- *"Cria uma tarefa diária para..."*\n- *"Quero que você rode isso toda segunda-feira"*\n- *"Automatiza X para acontecer todo dia às 7h"*\n- Qualquer pedido de automação ou tarefa recorrente\n\n## O que faz na prática\n\n- Cria tarefas cron com qualquer frequência (diária, semanal, mensal)\n- Executa agentes automaticamente no horário definido\n- Atualiza painéis, gera relatórios, envia lembretes\n- Monitora repositórios, emails ou dados externos\n\n## Tarefa ativa\n\n- **atualiza-painel-claude** — todo dia às 7h, verifica skills, repositórios e apps e atualiza este painel se algo mudou\n\n## Como usar\n\nDescreva o que quer automatizar, quando deve rodar e o que deve acontecer. A skill cria o agente e agenda a execução.`
+    },
+    'disc-assessment': {
+      icon: '🧠', iconStyle: 'background:#EFF6FF;color:#4285F4;',
+      name: 'DISC Assessment',
+      tagline: 'Enciclopédia DISC + gerador de relatórios comportamentais',
+      content: `## O que faz\n\nEspecialista DISC completo: consulta qualquer informação sobre as 24 soft skills, combinações DISC e fatores comportamentais. Gera relatórios profissionais — **Mapa de Pontos Fortes** e **Perfil Gerencial** — a partir de scores.\n\n## Quando ativa automaticamente\n\n- DISC, assessment, mapa de pontos fortes, perfil gerencial\n- Soft skills, roda das soft skills, 24 dimensões\n- Combinação DISC, fator dominante/influente/estável/analítico\n\n## Os 4 Fatores DISC\n\n| Fator | Estilo de Liderança | Emoção | Cor |\n|-------|---------------------|--------|-----|\n| D — Dominante | **Chefe** — direciona | Raiva (pavio curto) | Vermelho |\n| I — Influente | **Líder** — inspira | Otimismo | Amarelo |\n| E/S — Estável | **Trainer** — desenvolve | Não demonstra | Verde |\n| A/C — Analítico | **Mentor** — guia | Medo de errar | Azul |\n\n## Os 2 relatórios\n\n**Mapa de Pontos Fortes** (gratuito): dado os scores das 24 dimensões, seleciona os top 7 e gera relatório detalhado com descrições e atributos.\n\n**Perfil Gerencial** (pago): combinação DISC dominante, estilo de liderança, tomada de decisão, índices gerais e sobreposição dos 4 perfis.\n\n## A Roda das 24 Soft Skills\n\nOrdem imutável (sentido horário): Sociabilidade → Empatia → Paciência → Persistência → Conciliação → Planejamento → Estabilidade → Prudência → Detalhismo → Concentração → Organização → Disciplina → Racionalidade → Independência → Comando → Ousadia → Senso de Urgência → Objetividade → Dinamismo → Extroversão → Flexibilidade → Motivação → Persuasão → Carisma\n\n## Como usar\n\nInforme os scores das 24 dimensões (0–100) e peça o relatório desejado. Para consultas, mencione DISC + o que precisa saber.`
+    },
+    'disc-jovens': {
+      icon: '🎯', iconStyle: 'background:#FEF9C3;color:#D97706;',
+      name: 'DISC Jovens — Anti-Caos Start',
+      tagline: 'Assessment DISC adaptado para jovens de 16–22 anos',
+      content: `## O que faz\n\nVersão do DISC para o público jovem (16–22 anos) — linguagem gaming/RPG, sem jargão corporativo. Usa o sistema de **Personas** (Hard, Vibe, Flow, Deep) em vez de fatores DISC.\n\n## Quando ativar\n\n- Start, jovens, app jovens, Anti-Caos Start\n- Hard, Vibe, Flow, Deep, persona, modo on\n- Carreiras jovens, impacto da IA, Start-se Carreiras\n\n## Os 4 Modos ON\n\n| Modo | Fator | Tagline |\n|------|-------|---------|\n| 🎯 **Hard** | D | "Você não pede passagem — abre caminho." |\n| 🎤 **Vibe** | I | "Você acende o ambiente só de entrar." |\n| 🤝 **Flow** | E | "Você move o mundo no seu ritmo — silencioso e poderoso." |\n| 🔬 **Deep** | A | "Você transforma dados em ouro." |\n\n## Relatórios\n\n- **Mapa de Pontos Fortes** — gratuito, mesmo algoritmo do Pro\n- **Start-se Carreiras** — pago, inclui carreiras sugeridas + impacto da IA por carreira\n\n## Diferença Pro → Start\n\nMesmo algoritmo, linguagem diferente. "Fator" vira "Persona", "Perfil Gerencial" vira "Start-se Carreiras", "Pontos de melhoria" vira "Para evoluir". Nunca use "DISC" visível para o usuário jovem.\n\n## Como usar\n\nMencione *start*, *jovens* ou *app jovens* no contexto. A skill adapta automaticamente toda a linguagem e relatórios para o público 16–22.`
+    },
+    'success-insights': {
+      icon: '🔵', iconStyle: 'background:#EDFAF7;color:#059669;',
+      name: 'Success Insights',
+      tagline: 'Roda Success Insights — base de conhecimento Anti-Caos',
+      content: `## O que faz\n\nBase de conhecimento completa sobre a metodologia **Success Insights** (Capítulo 8 do Manual Definitivo DISC). Pronta para gerar relatórios e devolutivas nesse modelo.\n\n## Quando ativar\n\n- *Success Insights*, roda de estilos, Capítulo 8 DISC\n- Pedidos de devolutiva no modelo Success Insights\n- Interpretação de relatório ou gráfico de estilos\n\n## O que é o Success Insights\n\nO Success Insights é um modelo de apresentação dos resultados DISC usando uma **roda de 8 estilos** em vez dos 4 fatores puros. Cada estilo tem um nome descritivo que combina dois fatores DISC adjacentes — o que torna a leitura mais intuitiva e fácil de comunicar para o avaliado.\n\n## Como usar\n\nForneça os dados do perfil ou descreva o estilo identificado. A skill gera a devolutiva no formato Success Insights com linguagem acessível, sem jargão técnico.`
+    },
+    'softskills-assessments': {
+      icon: '📚', iconStyle: 'background:#F0EBF8;color:#7C3AED;',
+      name: 'Enciclopédia de Assessments',
+      tagline: '13 assessments e 10 ferramentas de soft skills',
+      content: `## O que faz\n\nEspecialista em todos os assessments e ferramentas de desenvolvimento humano da plataforma SoftSkills Pro. Explica, aplica, apresenta questionários e interpreta resultados de cada ferramenta.\n\n## Quando ativar\n\n- Âncoras de carreira, Schein, processamento cerebral, VAK\n- Linguagem de valorização, Chapman, valores, motivadores\n- Tétrade do tempo, índice de positividade, forças pessoais, VIA\n- *"Qual assessment usar para..."*, *"como interpretar esse resultado"*\n\n## Os 13 Assessments\n\n| # | Assessment | Base teórica |\n|---|---|---|\n| 1 | Mapa de Pontos Fortes | DISC |\n| 2 | Âncoras de Carreira | Edgar Schein |\n| 3 | Processamento Cerebral | VAK |\n| 4 | Linguagem de Valorização | Gary Chapman |\n| 5 | Tétrade do Tempo | — |\n| 6 | Índice de Positividade | — |\n| 7 | Valores | — |\n| 8 | Balanço de Motivadores | — |\n| 9 | Forças Pessoais | VIA |\n| 10 | Teste de Desempenho GO PRO | — |\n| 11 | Avaliação Sistêmica | Roda da Vida |\n\n## As 10 Ferramentas\n\nGROW · SWOT Pessoal · Canvas Pessoal · Visão de Vida · Balanço de Realizações · Ganhos e Perdas · Análise de Cenários · Modelo Sistemático de Mudança · Mural de Sonhos · Roadmap\n\n## Como usar\n\nDiga qual assessment quer aplicar, interpretar ou recomendar. A skill apresenta o questionário completo, calcula o resultado e gera devolutiva em linguagem acessível.\n\n> **Regra:** nunca use *coaching* — sempre *desenvolvimento de soft skills* ou *sessão*.`
+    },
+    'mentoria': {
+      icon: '🤝', iconStyle: 'background:#ECFDF5;color:#059669;',
+      name: 'Mentoria',
+      tagline: 'Estruturação de sessões e programas de mentoria',
+      content: `## O que faz\n\nEspecialista em mentoria e desenvolvimento humano. Estrutura sessões, cria perguntas poderosas, diagnostica prontidão e orienta a condução de reuniões 1-on-1.\n\n## Quando ativa automaticamente\n\n- Mentoria, mentorado, mentor, sessão de mentoria\n- Programa de mentoria, 1-on-1, one on one\n- Acompanhamento individual, desenvolvimento de líderes\n\n## Filosofia central\n\n**Desenvolver forças > corrigir fraquezas**\n\nO mentor não aconselha, não decide, não dirige. Ele fornece experiência e perspectiva para que o mentorado encontre seu próprio caminho. Perguntas poderosas valem mais que respostas prontas.\n\n## O que entrega\n\n- **Estrutura de sessão** — roteiro com objetivos, perguntas e encerramento\n- **Perguntas poderosas** — por tema, objetivo ou estágio de desenvolvimento\n- **Diagnóstico de prontidão** — MTT (Modelo Transteórico de Mudança)\n- **Programa completo** — cronograma, formatos, contrato, precificação\n\n## Vocabulário correto\n\n- **Use:** mentoria · desenvolvimento de soft skills · mentor · mentorado\n- **Nunca use:** coaching · coachee (pertencem a outra metodologia)\n\n## Como usar\n\nDescreva o contexto (individual, grupo, programa), o perfil do mentorado e o que precisa — estrutura de sessão, perguntas ou programa completo.`
+    },
+    'ideias-score': {
+      icon: '💡', iconStyle: 'background:#FEFCE8;color:#D97706;',
+      name: 'Ideias Score',
+      tagline: 'Avaliador de ideias com score /100 baseado no VidIQ',
+      content: `## O que faz\n\nRecebe qualquer lista de ideias — nomes de produtos, títulos de vídeos, nomes de cursos, temas — e devolve uma **tabela de scores /100** com base em 5 critérios ponderados, usando dados reais via busca.\n\n## Quando ativa automaticamente\n\n- *"Score essas ideias"* / *"pontua esses nomes"* / *"avalia esses títulos"*\n- *"Qual nome é melhor?"* / *"qual título performaria mais?"*\n- *"Qual tem mais busca?"* / *"me ajuda a escolher o nome"*\n\n## Os 5 critérios (pesos)\n\n| Critério | Peso | O que mede |\n|---------|------|------------|\n| Busca YouTube | 30% | Volume e views de vídeos existentes |\n| Tendência | 20% | Crescimento ou declínio do tema |\n| CTR Potencial | 20% | Poder emocional e gatilhos do título |\n| Memorabilidade | 15% | Facilidade de lembrar e pronunciar |\n| Versatilidade | 15% | Domínio, handle, contextos de uso |\n\n## Princípio fundamental\n\n**Benefício > Característica**\n\n- ❌ Característica: "Revela", "Mapeia", "Descobre"\n- ✅ Benefício: "Anticaos", "Clareza", "Potência", "Avança"\n\n## Interpretação do score\n\n| Faixa | Resultado | Ação |\n|-------|-----------|------|\n| 90–100 | Excelente | Prioridade máxima |\n| 75–89 | Muito bom | Alta chance de sucesso |\n| 60–74 | Bom | Viável com ajustes |\n| 40–59 | Fraco | Reformular |\n| 0–39 | Não recomendado | Descartar |\n\n## Como usar\n\nCole sua lista e peça para pontuar. Ex: *"Score essas 4 ideias de nome para o meu sprint:"*`
+    },
+    'plano-mvp-prd': {
+      icon: '🗂️', iconStyle: 'background:#E5E5EA;color:#1D1D1F;',
+      name: 'Plano MVP PRD',
+      tagline: 'Planejador completo de projetos web',
+      content: `## O que faz\n\nTransforma uma ideia em um plano executável com visão estratégica + técnica. Entrega Plano de Produto, MVP definido e PRD (Documento de Requisitos do Produto) completo.\n\n## Quando ativar\n\n- *"Quero criar um app"* / *"preciso de uma landing page"*\n- *"Monta um PRD"* / *"quero um MVP de..."*\n- *"Me ajude a planejar meu projeto"*\n\n## O que entrega\n\n### 1. Visão do Produto\nProblema, solução, proposta única de valor, personas, métricas de sucesso e análise competitiva.\n\n### 2. MVP — Mínimo Produto Viável\nO que entra, o que fica de fora, user stories, jornada do usuário e wireframe tela a tela.\n\n### 3. PRD — Requisitos\nRequisitos funcionais e não-funcionais, arquitetura técnica, modelo de dados, endpoints, componentes frontend, checklist de segurança e roadmap em fases.\n\n## Roadmap padrão\n\n| Fase | Período | Entrega |\n|------|---------|--------|\n| 1 — Fundação | Semana 1 | Infra + deploy inicial |\n| 2 — MVP Core | Semanas 2–3 | Fluxo principal funcionando |\n| 3 — Testes | Semana 4 | Validação com usuários reais |\n| 4 — Lançamento | Semana 5 | Go-live + monitoramento |\n\n## Stack preferida\n\nNext.js + Supabase + Vercel — mas adapta ao projeto. Landing page simples pode ser só HTML/CSS.\n\n## Como usar\n\nDescreva seu projeto em 1–2 frases. A skill entrevista você com até 8 perguntas e gera o plano completo. Para começar logo: *"Quero criar [X] para [quem] que resolve [problema]"*.`
+    }
+  };
+
+  function mdToHtml(md) {
+    const lines = md.split('\n');
+    let html = '';
+    let inList = false;
+    let inTable = false;
+    let tableRows = [];
+
+    function closeList() {
+      if (inList) { html += '</ul>'; inList = false; }
+    }
+    function flushTable() {
+      if (!inTable || tableRows.length === 0) return;
+      let thead = '', tbody = '';
+      tableRows.forEach((cells, i) => {
+        if (i === 0) {
+          thead = '<tr>' + cells.map(c => `<th>${inlineStr(c)}</th>`).join('') + '</tr>';
+        } else if (i > 1) {
+          tbody += '<tr>' + cells.map(c => `<td>${inlineStr(c)}</td>`).join('') + '</tr>';
+        }
+        // row i=1 is the separator row (---|---) — skip it
+      });
+      html += `<table><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+      inTable = false;
+      tableRows = [];
+    }
+    function inlineStr(text) {
+      return text
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    }
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith('|')) {
+        closeList();
+        inTable = true;
+        const cells = trimmed.split('|').slice(1, -1).map(c => c.trim());
+        tableRows.push(cells);
+        continue;
+      } else {
+        flushTable();
+      }
+
+      if (trimmed === '') continue;
+      if (trimmed === '---') { closeList(); html += '<hr>'; continue; }
+
+      if (trimmed.startsWith('#### ')) {
+        closeList(); html += `<h4>${inlineStr(trimmed.slice(5))}</h4>`;
+      } else if (trimmed.startsWith('### ')) {
+        closeList(); html += `<h3>${inlineStr(trimmed.slice(4))}</h3>`;
+      } else if (trimmed.startsWith('## ')) {
+        closeList(); html += `<h2>${inlineStr(trimmed.slice(3))}</h2>`;
+      } else if (trimmed.startsWith('# ')) {
+        closeList(); html += `<h1>${inlineStr(trimmed.slice(2))}</h1>`;
+      } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        if (!inList) { html += '<ul>'; inList = true; }
+        html += `<li>${inlineStr(trimmed.slice(2))}</li>`;
+      } else if (trimmed.startsWith('> ')) {
+        closeList(); html += `<blockquote><p>${inlineStr(trimmed.slice(2))}</p></blockquote>`;
+      } else {
+        closeList(); html += `<p>${inlineStr(trimmed)}</p>`;
+      }
+    }
+    closeList();
+    flushTable();
+    return html;
+  }
+
+  const modal     = document.getElementById('skillModal');
+  const modalIcon = document.getElementById('modalIcon');
+  const modalName = document.getElementById('modalName');
+  const modalTag  = document.getElementById('modalTagline');
+  const modalBody = document.getElementById('modalBody');
+
+  function openSkillModal(key) {
+    const skill = SKILLS_DATA[key];
+    if (!skill) return;
+    modalIcon.textContent = skill.icon;
+    modalIcon.setAttribute('style', skill.iconStyle + 'width:44px;height:44px;border-radius:12px;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;');
+    modalName.textContent = skill.name;
+    modalTag.textContent  = skill.tagline;
+    modalBody.innerHTML   = mdToHtml(skill.content);
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSkillModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.acc-item[data-skill]').forEach(item => {
+    item.addEventListener('dblclick', e => {
+      e.stopPropagation();
+      openSkillModal(item.dataset.skill);
+    });
+  });
+
+  document.getElementById('modalClose').addEventListener('click', closeSkillModal);
+  modal.addEventListener('click', e => { if (e.target === modal) closeSkillModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSkillModal(); });
 </script>
 </body>
 </html>
