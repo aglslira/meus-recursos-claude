@@ -42,7 +42,7 @@
   /* ── SUMMARY CARDS ── */
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 12px;
     margin-bottom: 20px;
   }
@@ -283,6 +283,11 @@
       <div class="sc-icon">🔗</div>
       <div class="sc-title">Apps Conectados</div>
       <div class="sc-sub">9 serviços integrados</div>
+    </div>
+    <div class="summary-card" data-target="repos">
+      <div class="sc-icon">📦</div>
+      <div class="sc-title">Repositórios</div>
+      <div class="sc-sub">7 repos no GitHub</div>
     </div>
   </div>
 
@@ -562,6 +567,99 @@
     </div>
   </div><!-- /panel-apps -->
 
+  <!-- ═══════════════════════════════════════
+       PANEL: REPOS
+  ════════════════════════════════════════ -->
+  <div class="panel" id="panel-repos">
+    <div class="back-btn" id="back-repos">↑ Voltar</div>
+    <div class="section-title">Repositórios no GitHub</div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#FEF0E6;color:#E8611A;">🔥</div>
+        <div class="acc-label">
+          <div class="acc-name">lider-anti-caos</div>
+          <div class="acc-tagline">Plataforma de kits e checklists para líderes · privado</div>
+        </div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Projeto principal da Comunidade Líder Anti-Caos. Hospeda a plataforma em produção em <strong>lider-anti-caos.vercel.app</strong> — kits, checklists e ferramentas práticas para líderes.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E6F4ED;color:#059669;">📊</div>
+        <div class="acc-label">
+          <div class="acc-name">app-assessments-adultos-v2</div>
+          <div class="acc-tagline">APP Assessments Adultos V2 · privado</div>
+        </div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Segunda versão do app de assessments para adultos da Comunidade. Plataforma de avaliações comportamentais (DISC e soft skills) com dashboard admin e banco Supabase.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#EAF0FD;color:#2563EB;">🧩</div>
+        <div class="acc-label">
+          <div class="acc-name">app-assessment</div>
+          <div class="acc-tagline">Plataforma de assessments para líderes e jovens · privado</div>
+        </div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Versão unificada da plataforma de assessments cobrindo tanto líderes adultos quanto o público jovem Anti-Caos. Evolução direta do v2.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#FEFCE8;color:#D97706;">🎓</div>
+        <div class="acc-label">
+          <div class="acc-name">kit-lider-indispensavel</div>
+          <div class="acc-tagline">Kit do Líder Indispensável · privado</div>
+        </div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Produto educacional — o Kit do Líder Indispensável da Comunidade Líder Anti-Caos. Provavelmente uma landing page ou app web do produto.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E5E5EA;color:#6E6E73;">📋</div>
+        <div class="acc-label">
+          <div class="acc-name">meus-recursos-claude</div>
+          <div class="acc-tagline">Este painel · público</div>
+        </div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">O repositório deste painel. Hospedado em <strong>meus-recursos-andre.netlify.app</strong>. Arquivo único <code>index.html</code> sem dependências.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#F5F0FD;color:#7C3AED;">🌱</div>
+        <div class="acc-label">
+          <div class="acc-name">Ola-Mundo / primeiro</div>
+          <div class="acc-tagline">Repos de aprendizado · privados</div>
+        </div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Dois repositórios criados durante o aprendizado de Git e GitHub. Não têm produto — servem como laboratório de experimentação.</div>
+      </div>
+    </div>
+
+  </div><!-- /panel-repos -->
+
   <footer>
     André <span class="footer-dot"></span> softskills.com.br <span class="footer-dot"></span> abril 2026
   </footer>
@@ -580,7 +678,7 @@
     });
   });
 
-  ['skills', 'apps'].forEach(name => {
+  ['skills', 'apps', 'repos'].forEach(name => {
     document.getElementById('back-' + name).addEventListener('click', () => {
       document.getElementById('panel-' + name).classList.remove('open');
       document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
