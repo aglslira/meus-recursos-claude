@@ -84,6 +84,65 @@
     border-bottom: 1px solid #E5E5EA;
   }
 
+  /* ── REPO THUMBNAIL ── */
+  .repo-thumb {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    border-radius: 8px;
+    border: 1px solid #E5E5EA;
+    margin-bottom: 10px;
+    background: #F2F2F7;
+  }
+  .repo-thumb-wrap {
+    position: relative;
+  }
+  .repo-thumb-link {
+    display: block;
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .repo-thumb-link::after {
+    content: "↗";
+    position: absolute;
+    top: 7px; right: 9px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    font-size: 12px;
+    border-radius: 5px;
+    padding: 2px 7px;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+  .repo-thumb-link:hover::after { opacity: 1; }
+  .repo-thumb-link img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+    border-radius: 8px;
+    border: 1px solid #E5E5EA;
+    background: #F2F2F7;
+  }
+  .repo-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .repo-tag.live   { background:#E6F4ED; color:#059669; }
+  .repo-tag.learn  { background:#F5F0FD; color:#7C3AED; }
+  .repo-tag.painel { background:#EEF2FF; color:#4F46E5; }
+
   /* ── ACCORDION ── */
   .acc-item {
     background: #FFFFFF;
@@ -579,12 +638,16 @@
         <div class="acc-icon" style="background:#FEF0E6;color:#E8611A;">🔥</div>
         <div class="acc-label">
           <div class="acc-name">lider-anti-caos</div>
-          <div class="acc-tagline">Plataforma de kits e checklists para líderes · privado</div>
+          <div class="acc-tagline">Plataforma de kits e checklists · privado</div>
         </div>
         <div class="acc-chevron">▼</div>
       </div>
       <div class="acc-body">
-        <div class="acc-desc">Projeto principal da Comunidade Líder Anti-Caos. Hospeda a plataforma em produção em <strong>lider-anti-caos.vercel.app</strong> — kits, checklists e ferramentas práticas para líderes.</div>
+        <span class="repo-tag live">● em produção</span>
+        <a class="repo-thumb-link" href="https://lider-anti-caos.vercel.app" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://lider-anti-caos.vercel.app" alt="lider-anti-caos preview">
+        </a>
+        <div class="acc-desc">Projeto principal da Comunidade Líder Anti-Caos. Kits, checklists e ferramentas práticas para líderes — Combo Líder Pro, 8 kits, 8 checklists, 4 acervos.</div>
       </div>
     </div>
 
@@ -593,12 +656,16 @@
         <div class="acc-icon" style="background:#E6F4ED;color:#059669;">📊</div>
         <div class="acc-label">
           <div class="acc-name">app-assessments-adultos-v2</div>
-          <div class="acc-tagline">APP Assessments Adultos V2 · privado</div>
+          <div class="acc-tagline">Assessments Adultos V2 · privado</div>
         </div>
         <div class="acc-chevron">▼</div>
       </div>
       <div class="acc-body">
-        <div class="acc-desc">Segunda versão do app de assessments para adultos da Comunidade. Plataforma de avaliações comportamentais (DISC e soft skills) com dashboard admin e banco Supabase.</div>
+        <span class="repo-tag live">● em produção</span>
+        <a class="repo-thumb-link" href="https://app-assessments-adultos-v2.vercel.app" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://app-assessments-adultos-v2.vercel.app" alt="app-assessments-adultos-v2 preview">
+        </a>
+        <div class="acc-desc">Segunda versão do app de assessments. "Descubra quem você é de verdade" — perfis Sou Líder e Sou Jovem. Dashboard admin com Supabase.</div>
       </div>
     </div>
 
@@ -607,12 +674,16 @@
         <div class="acc-icon" style="background:#EAF0FD;color:#2563EB;">🧩</div>
         <div class="acc-label">
           <div class="acc-name">app-assessment</div>
-          <div class="acc-tagline">Plataforma de assessments para líderes e jovens · privado</div>
+          <div class="acc-tagline">Assessments unificado · anti-caos.app.br · privado</div>
         </div>
         <div class="acc-chevron">▼</div>
       </div>
       <div class="acc-body">
-        <div class="acc-desc">Versão unificada da plataforma de assessments cobrindo tanto líderes adultos quanto o público jovem Anti-Caos. Evolução direta do v2.</div>
+        <span class="repo-tag live">● em produção</span>
+        <a class="repo-thumb-link" href="https://app-assessment-lideranticaos.vercel.app" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://app-assessment-lideranticaos.vercel.app" alt="app-assessment preview">
+        </a>
+        <div class="acc-desc">Versão unificada com domínio próprio <strong>anti-caos.app.br</strong>. Cobre líderes adultos e jovens Anti-Caos numa única plataforma. Evolução do v2.</div>
       </div>
     </div>
 
@@ -621,12 +692,16 @@
         <div class="acc-icon" style="background:#FEFCE8;color:#D97706;">🎓</div>
         <div class="acc-label">
           <div class="acc-name">kit-lider-indispensavel</div>
-          <div class="acc-tagline">Kit do Líder Indispensável · privado</div>
+          <div class="acc-tagline">Tutoriais Kit do Líder · privado</div>
         </div>
         <div class="acc-chevron">▼</div>
       </div>
       <div class="acc-body">
-        <div class="acc-desc">Produto educacional — o Kit do Líder Indispensável da Comunidade Líder Anti-Caos. Provavelmente uma landing page ou app web do produto.</div>
+        <span class="repo-tag live">● em produção</span>
+        <a class="repo-thumb-link" href="https://tutoriais-kit-lider.vercel.app" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://tutoriais-kit-lider.vercel.app" alt="kit-lider-indispensavel preview">
+        </a>
+        <div class="acc-desc">Plataforma de tutoriais do Kit do Líder Indispensável — Método C.I.C.L.O. 5 tutoriais, 60 min, 5 pilares. Programa de liderança premium.</div>
       </div>
     </div>
 
@@ -640,6 +715,10 @@
         <div class="acc-chevron">▼</div>
       </div>
       <div class="acc-body">
+        <span class="repo-tag painel">● este painel</span>
+        <a class="repo-thumb-link" href="https://meus-recursos-andre.netlify.app" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://meus-recursos-andre.netlify.app" alt="meus-recursos-claude preview">
+        </a>
         <div class="acc-desc">O repositório deste painel. Hospedado em <strong>meus-recursos-andre.netlify.app</strong>. Arquivo único <code>index.html</code> sem dependências.</div>
       </div>
     </div>
@@ -654,6 +733,7 @@
         <div class="acc-chevron">▼</div>
       </div>
       <div class="acc-body">
+        <span class="repo-tag learn">● laboratório</span>
         <div class="acc-desc">Dois repositórios criados durante o aprendizado de Git e GitHub. Não têm produto — servem como laboratório de experimentação.</div>
       </div>
     </div>
