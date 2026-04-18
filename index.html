@@ -30,6 +30,8 @@
 
   /* ── HEADER ── */
   header { margin-bottom: 36px; }
+  .header-title-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .header-title-row h1 { margin: 0; flex: 1; }
   .header-bar {
     width: 48px; height: 4px;
     background: #E8611A;
@@ -750,8 +752,11 @@
 
   <header>
     <div class="header-bar"></div>
-    <h1>Meus Recursos no Claude</h1>
-    <p>Clique em um card para explorar — André · abril 2026</p>
+    <div class="header-title-row">
+      <h1>Meus Recursos no Claude</h1>
+      <button class="refresh-btn" id="refresh-btn" title="Buscar status ao vivo dos projetos">🔄 Atualizar</button>
+    </div>
+    <p>Clique em um card para explorar — André · abril 2026 <span class="refresh-ts" id="refresh-ts"></span></p>
   </header>
 
   <!-- SUMMARY CARDS -->
@@ -1503,13 +1508,7 @@
   <div class="panel" id="panel-projetos">
     <div class="back-btn" id="back-projetos">↑ Voltar</div>
 
-    <div class="projetos-toolbar">
-      <div class="section-title" style="margin:0;">Em Produção (7)</div>
-      <div class="projetos-refresh-area">
-        <span class="refresh-ts" id="refresh-ts"></span>
-        <button class="refresh-btn" id="refresh-btn" title="Buscar status ao vivo">🔄 Atualizar</button>
-      </div>
-    </div>
+    <div class="section-title">Em Produção (7)</div>
 
     <!-- 1. app-assessment -->
     <div class="acc-item" data-project="app-assessment">
