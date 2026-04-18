@@ -28,14 +28,31 @@ async function safeJson(res) {
   try { return await res.json(); } catch { return null; }
 }
 
-async function fetchWithAuth(url, token, extraHeaders) {
-  return fetch(url, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-      ...(extraHeaders || {}),
-    },
-  });
+async function fetchWithAuth(url, token, extraHeaders, timeoutMs) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), timeoutMs || 8000);
+  try {
+    return await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        ...(extraHeaders || {}),
+      },
+      signal: ctl.signal,
+    });
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function fetchNoAuth(url, timeoutMs) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), timeoutMs || 8000);
+  try {
+    return await fetch(url, { signal: ctl.signal });
+  } finally {
+    clearTimeout(t);
+  }
 }
 
 // ──────────────────────────────────────────────────────────────────────────
@@ -295,10 +312,12 @@ async function checkSupabaseAdvisors(token, project) {
 async function checkObservatory(host) {
   const id = `obs-${host}`;
   try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 15000);
     const res = await fetch(
       `https://observatory-api.mdn.mozilla.net/api/v2/analyze?host=${encodeURIComponent(host)}`,
-      { method: 'POST' }
-    );
+      { method: 'POST', signal: ctl.signal }
+    ).finally(() => clearTimeout(t));
     const data = await safeJson(res);
     if (!data || !data.grade) {
       return mkCheck(id, 'headers', host, `Observatory — ${host}`, 'error',
@@ -321,52 +340,47 @@ async function checkObservatory(host) {
 // ──────────────────────────────────────────────────────────────────────────
 // SSL LABS (async polling)
 
-async function startSslLabsScan(host) {
-  try {
-    await fetch(
-      `https://api.ssllabs.com/api/v3/analyze?host=${encodeURIComponent(host)}&startNew=on&all=done&ignoreMismatch=on`,
-      { headers: { 'User-Agent': 'painel-security-audit/1.0' } }
-    );
-  } catch { /* fire and forget */ }
-}
-
-async function pollSslLabs(host, maxWaitMs) {
+// SSL Labs — NO polling (fire & check current state only, avoid function timeout)
+async function checkSslLabs(host) {
   const id = `ssl-${host}`;
-  const deadline = Date.now() + maxWaitMs;
   try {
-    while (Date.now() < deadline) {
-      const res = await fetch(
-        `https://api.ssllabs.com/api/v3/analyze?host=${encodeURIComponent(host)}&all=done`
-      );
-      const data = await safeJson(res);
-      if (!data) {
-        await new Promise(r => setTimeout(r, 5000));
-        continue;
-      }
-      if (data.status === 'READY') {
-        const ep = data.endpoints?.[0];
-        const grade = ep?.grade || '?';
-        const status = /^A/.test(grade) ? 'ok' : /^B/.test(grade) ? 'warning' : 'critical';
-        return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, status,
-          `Grade ${grade}${ep?.gradeTrustIgnored && ep.gradeTrustIgnored !== grade ? ` (trust ignorado: ${ep.gradeTrustIgnored})` : ''}`,
-          `Detalhes: https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`,
-          'https://www.ssllabs.com/ssltest/',
-          { scoreLetter: grade });
-      }
-      if (data.status === 'ERROR') {
-        return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'error',
-          data.statusMessage || 'Scan falhou.', null, null);
-      }
-      // IN_PROGRESS or DNS: wait
-      await new Promise(r => setTimeout(r, 8000));
+    // Just query current state (will trigger new scan if none exists)
+    const res = await fetchNoAuth(
+      `https://api.ssllabs.com/api/v3/analyze?host=${encodeURIComponent(host)}&fromCache=on&maxAge=24`,
+      6000
+    );
+    const data = await safeJson(res);
+    if (!data) {
+      return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'info',
+        'Scan não iniciado. Clique no link abaixo pra rodar manualmente.',
+        null,
+        `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`);
     }
+    if (data.status === 'READY') {
+      const ep = data.endpoints?.[0];
+      const grade = ep?.grade || '?';
+      const status = /^A/.test(grade) ? 'ok' : /^B/.test(grade) ? 'warning' : 'critical';
+      return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, status,
+        `Grade ${grade} (cache do ssllabs.com)`,
+        null,
+        `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`,
+        { scoreLetter: grade });
+    }
+    if (data.status === 'ERROR') {
+      return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'error',
+        data.statusMessage || 'Scan falhou.', null,
+        `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`);
+    }
+    // IN_PROGRESS / DNS — don't wait
     return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'info',
-      'Scan em andamento — aguarde 2min e tente novamente.',
-      `Verificar manualmente: https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`,
-      null);
+      `Scan em andamento (${data.status || '?'}). Confira em ~2min.`,
+      null,
+      `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`);
   } catch (e) {
-    return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'error',
-      `Erro: ${e.message || 'desconhecido'}`, null, null);
+    return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'info',
+      'Verifique manualmente — SSL Labs pode demorar 2min.',
+      null,
+      `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`);
   }
 }
 
@@ -435,13 +449,8 @@ export default async function handler(req, res) {
 
   const checks = await Promise.all(checkPromises);
 
-  // 3) Start SSL Labs scans (don't block — client polls separately if needed)
-  // For now, run SSL Labs polling with 45s max to stay under function timeout
-  const sslPromises = domainList.slice(0, 3).map(host => {
-    startSslLabsScan(host);
-    return pollSslLabs(host, 45000);
-  });
-  const sslChecks = await Promise.all(sslPromises);
+  // 3) SSL Labs — query cached state only (no polling, fast)
+  const sslChecks = await Promise.all(domainList.map(host => checkSslLabs(host)));
   checks.push(...sslChecks);
 
   // Summary

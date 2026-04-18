@@ -6,7 +6,7 @@
       "maxDuration": 15
     },
     "api/security.js": {
-      "maxDuration": 60
+      "maxDuration": 30
     }
   }
 }
