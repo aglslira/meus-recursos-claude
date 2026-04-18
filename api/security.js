@@ -343,8 +343,9 @@ async function checkObservatory(host) {
 // SSL Labs — NO polling (fire & check current state only, avoid function timeout)
 async function checkSslLabs(host) {
   const id = `ssl-${host}`;
+  const docsUrl = `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`;
   try {
-    // Just query current state (will trigger new scan if none exists)
+    // Query cached result; SSL Labs will start a new scan if nothing cached
     const res = await fetchNoAuth(
       `https://api.ssllabs.com/api/v3/analyze?host=${encodeURIComponent(host)}&fromCache=on&maxAge=24`,
       6000
@@ -352,35 +353,35 @@ async function checkSslLabs(host) {
     const data = await safeJson(res);
     if (!data) {
       return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'info',
-        'Scan não iniciado. Clique no link abaixo pra rodar manualmente.',
-        null,
-        `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`);
+        'Scan não iniciado. Clique em Docs pra rodar manualmente (demora ~2min).',
+        null, docsUrl);
     }
     if (data.status === 'READY') {
       const ep = data.endpoints?.[0];
-      const grade = ep?.grade || '?';
+      const grade = ep?.grade;
+      // Empty/invalid grade → treat as info (not critical!)
+      if (!grade || grade === '?') {
+        return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'info',
+          'Scan concluído mas sem nota (domínio pode não expor HTTPS ou ser inválido).',
+          null, docsUrl);
+      }
       const status = /^A/.test(grade) ? 'ok' : /^B/.test(grade) ? 'warning' : 'critical';
       return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, status,
-        `Grade ${grade} (cache do ssllabs.com)`,
-        null,
-        `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`,
-        { scoreLetter: grade });
+        `Grade ${grade}`, null, docsUrl, { scoreLetter: grade });
     }
     if (data.status === 'ERROR') {
-      return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'error',
-        data.statusMessage || 'Scan falhou.', null,
-        `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`);
+      return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'info',
+        `SSL Labs não conseguiu testar (${data.statusMessage || 'erro'}). Comum em domínios sem HTTPS público.`,
+        null, docsUrl);
     }
-    // IN_PROGRESS / DNS — don't wait
+    // IN_PROGRESS / DNS — scan está rodando agora
     return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'info',
-      `Scan em andamento (${data.status || '?'}). Confira em ~2min.`,
-      null,
-      `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`);
+      `Primeiro scan iniciado pelo SSL Labs. Rode Auditar de novo em ~2min pra ver a nota.`,
+      null, docsUrl);
   } catch (e) {
     return mkCheck(id, 'ssl', host, `SSL Labs — ${host}`, 'info',
-      'Verifique manualmente — SSL Labs pode demorar 2min.',
-      null,
-      `https://www.ssllabs.com/ssltest/analyze.html?d=${encodeURIComponent(host)}`);
+      'Não foi possível consultar agora. Tente em ~2min.',
+      null, docsUrl);
   }
 }
 
