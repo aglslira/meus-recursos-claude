@@ -42,7 +42,7 @@
   /* ── SUMMARY CARDS ── */
   .summary-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     margin-bottom: 20px;
   }
@@ -393,10 +393,15 @@
       <div class="sc-title">Skills Pessoais</div>
       <div class="sc-sub">13 skills criadas por você</div>
     </div>
+    <div class="summary-card" data-target="plugins">
+      <div class="sc-icon">🧩</div>
+      <div class="sc-title">Plugins</div>
+      <div class="sc-sub">8 instalados · 17 disponíveis</div>
+    </div>
     <div class="summary-card" data-target="apps">
       <div class="sc-icon">🔗</div>
       <div class="sc-title">Apps Conectados</div>
-      <div class="sc-sub">9 serviços integrados</div>
+      <div class="sc-sub">9 conectados · mais disponíveis</div>
     </div>
     <div class="summary-card" data-target="repos">
       <div class="sc-icon">📦</div>
@@ -405,9 +410,13 @@
     </div>
   </div>
 
-  <!-- PLUGINS SECTION -->
-  <div class="plugins-section">
-    <div class="plugins-label">🧩 Plugins Instalados (8)</div>
+  <!-- ═══════════════════════════════════════
+       PANEL: PLUGINS
+  ════════════════════════════════════════ -->
+  <div class="panel" id="panel-plugins">
+    <div class="back-btn" id="back-plugins">↑ Voltar</div>
+
+    <div class="section-title">Plugins Instalados (8)</div>
     <div class="plugins-grid">
 
       <div class="plugin-card">
@@ -577,7 +586,7 @@
       </div>
 
     </div>
-  </div>
+  </div><!-- /panel-plugins -->
 
   <!-- ═══════════════════════════════════════
        PANEL: SKILLS
@@ -833,137 +842,165 @@
   ════════════════════════════════════════ -->
   <div class="panel" id="panel-apps">
     <div class="back-btn" id="back-apps">↑ Voltar</div>
-    <div class="section-title">Apps &amp; Serviços Conectados</div>
 
-    <div class="apps-list">
+    <div class="section-title">Apps Conectados (9)</div>
 
-      <div class="acc-item">
-        <div class="acc-header">
-          <div class="acc-icon" style="background:#EAF2FE;color:#4285F4;">✉️</div>
-          <div class="acc-label">
-            <div class="acc-name">Gmail</div>
-            <div class="acc-tagline">Leitura e envio de emails</div>
-          </div>
-          <div class="acc-chevron">▼</div>
-        </div>
-        <div class="acc-body">
-          <div class="acc-desc">Claude consegue ler, buscar e criar rascunhos de email. Ex: <em>"me mostra os últimos emails de fulano"</em>, <em>"cria um rascunho respondendo isso"</em>.</div>
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#EAF2FE;color:#4285F4;">✉️</div>
+        <div class="acc-label"><div class="acc-name">Gmail</div><div class="acc-tagline">Leitura e envio de emails</div></div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Lê, busca e cria rascunhos de email. Ex: <em>"me mostra os últimos emails de fulano"</em>, <em>"cria um rascunho respondendo isso"</em>.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E6F4ED;color:#0F9D58;">📅</div>
+        <div class="acc-label"><div class="acc-name">Google Calendar</div><div class="acc-tagline">Agenda e eventos</div></div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Lê sua agenda, cria e edita eventos. Ex: <em>"o que tenho amanhã?"</em>, <em>"marca uma reunião na quinta às 14h"</em>.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E6F4ED;color:#34A853;">📁</div>
+        <div class="acc-label"><div class="acc-name">Google Drive</div><div class="acc-tagline">Arquivos e documentos</div></div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Busca, lê e cria arquivos no Drive. Ex: <em>"acha o documento de proposta da semana passada"</em>, <em>"cria um doc com esse conteúdo"</em>.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E6FAFA;color:#00C4CC;">🎨</div>
+        <div class="acc-label"><div class="acc-name">Canva</div><div class="acc-tagline">Design e criação visual</div></div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Cria e edita designs no Canva. Ex: <em>"cria um post para o Instagram no Canva"</em>, <em>"edita esse design"</em>.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E6FAF2;color:#00E37A;">🗄️</div>
+        <div class="acc-label"><div class="acc-name">Supabase</div><div class="acc-tagline">Banco de dados e backend</div></div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Gerencia projetos, executa SQL, cria migrações e faz deploy de Edge Functions. Ex: <em>"mostra as tabelas do projeto X"</em>, <em>"cria uma migração para adicionar a coluna Y"</em>.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E6F7F6;color:#00AD9F;">🚀</div>
+        <div class="acc-label"><div class="acc-name">Netlify</div><div class="acc-tagline">Deploy e hospedagem</div></div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Cria sites, faz deploy e gerencia variáveis de ambiente. Ex: <em>"qual o status do último deploy?"</em>, <em>"lista meus projetos Netlify"</em>.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#F0F0F0;color:#1D1D1F;">▲</div>
+        <div class="acc-label"><div class="acc-name">Vercel</div><div class="acc-tagline">Deploy e hospedagem</div></div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Lista projetos, vê deploys, logs e domínios. Ex: <em>"quais projetos tenho no Vercel?"</em>, <em>"mostra os logs do último deploy"</em>.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E5E5EA;color:#6E6E73;">🖥️</div>
+        <div class="acc-label"><div class="acc-name">Desktop Commander</div><div class="acc-tagline">Arquivos e processos do Mac</div></div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Lê, cria e edita arquivos diretamente no Mac, executa comandos e gerencia processos. Ex: <em>"abre o arquivo X"</em>, <em>"cria uma pasta chamada Y"</em>.</div>
+      </div>
+    </div>
+
+    <div class="acc-item">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#EAF2FE;color:#4285F4;">🌐</div>
+        <div class="acc-label"><div class="acc-name">Chrome</div><div class="acc-tagline">Navegação e automação web</div></div>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Navega em páginas, lê conteúdo, preenche formulários e interage com sites. Ex: <em>"abre essa URL e me resume o conteúdo"</em>.</div>
+      </div>
+    </div>
+
+    <!-- Apps disponíveis recomendados -->
+    <div class="plugins-available-toggle" id="aat-toggle" style="margin-top:16px;">
+      <span>
+        <span class="pat-label">Apps disponíveis — recomendados para você</span>
+        <span class="pat-count">5</span>
+      </span>
+      <span class="pat-chevron">▼</span>
+    </div>
+    <div class="plugins-available-body" id="aat-body">
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon" style="background:#E5E5EA;color:#1D1D1F;">🐙</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">GitHub</div>
+          <div class="plugin-avail-desc">Abre issues, comenta em PRs, busca commits e gerencia repositórios sem sair do Claude.</div>
+          <span class="plugin-rec yes">✓ Indicado — você já usa o GitHub diariamente para seus projetos</span>
         </div>
       </div>
 
-      <div class="acc-item">
-        <div class="acc-header">
-          <div class="acc-icon" style="background:#E6F4ED;color:#0F9D58;">📅</div>
-          <div class="acc-label">
-            <div class="acc-name">Google Calendar</div>
-            <div class="acc-tagline">Agenda e eventos</div>
-          </div>
-          <div class="acc-chevron">▼</div>
-        </div>
-        <div class="acc-body">
-          <div class="acc-desc">Claude consegue ler sua agenda, criar e editar eventos. Ex: <em>"o que tenho amanhã?"</em>, <em>"marca uma reunião na quinta às 14h"</em>.</div>
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon" style="background:#F3F0FF;color:#7C3AED;">📝</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Notion</div>
+          <div class="plugin-avail-desc">Lê e escreve em páginas do Notion, busca docs e cria conteúdo direto nas suas bases.</div>
+          <span class="plugin-rec yes">✓ Indicado — ótimo para documentar sprints, materiais de aula e estratégia</span>
         </div>
       </div>
 
-      <div class="acc-item">
-        <div class="acc-header">
-          <div class="acc-icon" style="background:#E6F4ED;color:#34A853;">📁</div>
-          <div class="acc-label">
-            <div class="acc-name">Google Drive</div>
-            <div class="acc-tagline">Arquivos e documentos</div>
-          </div>
-          <div class="acc-chevron">▼</div>
-        </div>
-        <div class="acc-body">
-          <div class="acc-desc">Claude consegue buscar, ler e criar arquivos no Drive. Ex: <em>"acha o documento de proposta da semana passada"</em>, <em>"cria um doc com esse conteúdo"</em>.</div>
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon" style="background:#FFF0F3;color:#E03E52;">❤️</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Hotmart</div>
+          <div class="plugin-avail-desc">Acessa métricas de vendas, assinantes e produtos da sua conta Hotmart.</div>
+          <span class="plugin-rec yes">✓ Indicado — se você vende produtos digitais na Hotmart</span>
         </div>
       </div>
 
-      <div class="acc-item">
-        <div class="acc-header">
-          <div class="acc-icon" style="background:#E6FAFA;color:#00C4CC;">🎨</div>
-          <div class="acc-label">
-            <div class="acc-name">Canva</div>
-            <div class="acc-tagline">Design e criação visual</div>
-          </div>
-          <div class="acc-chevron">▼</div>
-        </div>
-        <div class="acc-body">
-          <div class="acc-desc">Claude consegue criar e editar designs no Canva. Ex: <em>"cria um post para o Instagram no Canva"</em>, <em>"edita esse design"</em>.</div>
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon" style="background:#E8F5E9;color:#2E7D32;">📊</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Google Sheets</div>
+          <div class="plugin-avail-desc">Lê, escreve e analisa planilhas diretamente. Útil para dados de assessments e relatórios.</div>
+          <span class="plugin-rec yes">✓ Indicado — complementa o Drive para trabalhar com dados estruturados</span>
         </div>
       </div>
 
-      <div class="acc-item">
-        <div class="acc-header">
-          <div class="acc-icon" style="background:#E6FAF2;color:#00E37A;">🗄️</div>
-          <div class="acc-label">
-            <div class="acc-name">Supabase</div>
-            <div class="acc-tagline">Banco de dados e backend</div>
-          </div>
-          <div class="acc-chevron">▼</div>
-        </div>
-        <div class="acc-body">
-          <div class="acc-desc">Claude consegue gerenciar projetos, executar SQL e criar migrações no Supabase. Ex: <em>"mostra as tabelas do projeto X"</em>, <em>"cria uma migração para adicionar a coluna Y"</em>.</div>
-        </div>
-      </div>
-
-      <div class="acc-item">
-        <div class="acc-header">
-          <div class="acc-icon" style="background:#E6F7F6;color:#00AD9F;">🚀</div>
-          <div class="acc-label">
-            <div class="acc-name">Netlify</div>
-            <div class="acc-tagline">Deploy e hospedagem</div>
-          </div>
-          <div class="acc-chevron">▼</div>
-        </div>
-        <div class="acc-body">
-          <div class="acc-desc">Claude consegue ver e gerenciar seus deploys e projetos no Netlify. Ex: <em>"qual o status do último deploy?"</em>, <em>"lista meus projetos Netlify"</em>.</div>
-        </div>
-      </div>
-
-      <div class="acc-item">
-        <div class="acc-header">
-          <div class="acc-icon" style="background:#F0F0F0;color:#1D1D1F;">▲</div>
-          <div class="acc-label">
-            <div class="acc-name">Vercel</div>
-            <div class="acc-tagline">Deploy e hospedagem</div>
-          </div>
-          <div class="acc-chevron">▼</div>
-        </div>
-        <div class="acc-body">
-          <div class="acc-desc">Claude consegue listar projetos, ver deploys e logs no Vercel. Ex: <em>"quais projetos tenho no Vercel?"</em>, <em>"mostra os logs do último deploy"</em>.</div>
-        </div>
-      </div>
-
-      <div class="acc-item">
-        <div class="acc-header">
-          <div class="acc-icon" style="background:#E5E5EA;color:#6E6E73;">🖥️</div>
-          <div class="acc-label">
-            <div class="acc-name">Desktop Commander</div>
-            <div class="acc-tagline">Arquivos e processos do seu computador</div>
-          </div>
-          <div class="acc-chevron">▼</div>
-        </div>
-        <div class="acc-body">
-          <div class="acc-desc">Claude consegue ler, criar e editar arquivos diretamente no seu Mac, além de executar comandos. Ex: <em>"abre o arquivo X"</em>, <em>"cria uma pasta chamada Y"</em>.</div>
-        </div>
-      </div>
-
-      <div class="acc-item">
-        <div class="acc-header">
-          <div class="acc-icon" style="background:#EAF2FE;color:#4285F4;">🌐</div>
-          <div class="acc-label">
-            <div class="acc-name">Chrome</div>
-            <div class="acc-tagline">Navegação e automação web</div>
-          </div>
-          <div class="acc-chevron">▼</div>
-        </div>
-        <div class="acc-body">
-          <div class="acc-desc">Claude consegue navegar em páginas, ler conteúdo e interagir com sites no Chrome. Ex: <em>"abre essa URL e me resume o conteúdo"</em>, <em>"preenche esse formulário"</em>.</div>
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon" style="background:#E3F2FD;color:#1565C0;">💬</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Slack</div>
+          <div class="plugin-avail-desc">Integra com Slack — lê canais, envia mensagens, busca histórico de conversas.</div>
+          <span class="plugin-rec maybe">~ Considerar — se você comunicar com alunos ou equipe pelo Slack</span>
         </div>
       </div>
 
     </div>
+
   </div><!-- /panel-apps -->
 
   <!-- ═══════════════════════════════════════
@@ -1087,15 +1124,11 @@
 </div>
 
 <script>
-  // plugins available toggle
-  const patToggle = document.getElementById('pat-toggle');
-  const patBody = document.getElementById('pat-body');
-  if (patToggle) {
-    patToggle.addEventListener('click', () => {
-      patToggle.classList.toggle('open');
-      patBody.classList.toggle('open');
-    });
-  }
+  // generic toggles (plugins available + apps available)
+  [['pat-toggle','pat-body'], ['aat-toggle','aat-body']].forEach(([tid, bid]) => {
+    const t = document.getElementById(tid), b = document.getElementById(bid);
+    if (t && b) t.addEventListener('click', () => { t.classList.toggle('open'); b.classList.toggle('open'); });
+  });
 
   document.querySelectorAll('.summary-card').forEach(card => {
     card.addEventListener('click', () => {
@@ -1108,7 +1141,7 @@
     });
   });
 
-  ['skills', 'apps', 'repos'].forEach(name => {
+  ['skills', 'plugins', 'apps', 'repos'].forEach(name => {
     document.getElementById('back-' + name).addEventListener('click', () => {
       document.getElementById('panel-' + name).classList.remove('open');
       document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
