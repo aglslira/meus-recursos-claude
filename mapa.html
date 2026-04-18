@@ -36,7 +36,6 @@
   }
   .back-link:hover { background: #F2F2F7; }
 
-  /* Filtros por área */
   .filters {
     position: fixed; top: 92px; left: 22px; z-index: 15;
     background: #fff; border: 1px solid #E5E5EA; border-radius: 12px;
@@ -54,7 +53,6 @@
   .filter-chip:hover { background: #E5E5EA; }
   .filter-chip.active { background: #E8611A; color: #fff; }
 
-  /* Legenda compacta */
   .legend {
     position: fixed; bottom: 22px; left: 22px; z-index: 15;
     background: #fff; border: 1px solid #E5E5EA; border-radius: 12px;
@@ -70,7 +68,6 @@
     background: #F2F2F7;
   }
 
-  /* Detalhe do nó */
   .node-detail {
     position: fixed; bottom: 22px; right: 22px; z-index: 15;
     background: #fff; border: 1px solid #E5E5EA; border-radius: 14px;
@@ -98,7 +95,6 @@
   }
   .node-detail-connection:hover { background: #E5E5EA; }
 
-  /* Controles */
   .controls {
     position: fixed; top: 100px; right: 22px; z-index: 15;
     display: flex; flex-direction: column; gap: 6px;
@@ -144,9 +140,9 @@
 
 <div class="legend">
   <div class="legend-title">Tipos</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#1D1D1F;"></span>Hub</div>
   <div class="legend-item"><span class="legend-dot" style="background:#E8611A;"></span>Projeto</div>
-  <div class="legend-item"><span class="legend-dot" style="background:#0D9488;"></span>Ferramenta (skill/plugin)</div>
-  <div class="legend-item"><span class="legend-dot" style="background:#3B82F6;"></span>Integração</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#0D9488;"></span>Ferramenta</div>
 </div>
 
 <div class="controls">
@@ -167,12 +163,21 @@
 </div>
 
 <script>
-// ── DADOS (simplificado: 3 tipos, nomes amigáveis) ─────────────────────────
+// ── DADOS ──────────────────────────────────────────────────────────────────
 
 const NODES = [
-  // PROJETOS (laranja)
+  // HUB CENTRAL
+  { id: 'anti-caos', label: 'Anti-Caos', type: 'hub', areas: ['tecnologia','conteudo','marketing','educacao'], desc: 'Ecossistema central — Comunidade Anti-Caos (softskills.com.br).' },
+
+  // SUB-HUBS DE ÁREA
+  { id: 'area-tec', label: 'Tecnologia', type: 'hub', areas: ['tecnologia'], desc: 'Apps, plataformas, deploys, segurança.' },
+  { id: 'area-con', label: 'Conteúdo', type: 'hub', areas: ['conteudo'], desc: 'Aulas, tutoriais, sprints, livros, design.' },
+  { id: 'area-mkt', label: 'Marketing', type: 'hub', areas: ['marketing'], desc: 'Copy, funil, emails, lançamentos, vendas.' },
+  { id: 'area-edu', label: 'Educação', type: 'hub', areas: ['educacao'], desc: 'DISC, soft skills, mentoria, assessments.' },
+
+  // PROJETOS
   { id: 'p-assessment', label: 'App de Assessments', type: 'projeto', areas: ['tecnologia','educacao'], desc: 'Plataforma onde as pessoas fazem DISC e Soft Skills. No ar.', url: 'https://on.anti-caos.app.br' },
-  { id: 'p-adultos', label: 'Assessments Adultos V2', type: 'projeto', areas: ['tecnologia','educacao'], desc: 'Nova versão dos assessments para adultos na Comunidade Anti-Caos. No ar.' },
+  { id: 'p-adultos', label: 'Assessments Adultos V2', type: 'projeto', areas: ['tecnologia','educacao'], desc: 'Nova versão dos assessments para adultos na Comunidade. No ar.' },
   { id: 'p-lider', label: 'Líder Anti-Caos', type: 'projeto', areas: ['tecnologia','educacao','marketing'], desc: 'Plataforma do Kit do Líder Indispensável. No ar.', url: 'https://gestao.anti-caos.app.br' },
   { id: 'p-painel', label: 'Painel Claude', type: 'projeto', areas: ['tecnologia'], desc: 'Este painel — dashboard pessoal. No ar.', url: 'https://painelclaude.anti-caos.app.br' },
   { id: 'p-tutoriais', label: 'Tutoriais Kit Líder', type: 'projeto', areas: ['conteudo','educacao'], desc: '6 tutoriais interativos do Kit do Líder. No ar.', url: 'https://klindispensavel.anti-caos.app.br' },
@@ -183,80 +188,67 @@ const NODES = [
   { id: 'p-livro', label: 'Livro DISC', type: 'projeto', areas: ['conteudo','educacao'], desc: 'Em construção — livro sobre DISC e soft skills.' },
   { id: 'p-ltm', label: 'Low Ticket Maxxima V2', type: 'projeto', areas: ['marketing'], desc: 'Em construção — próxima versão do produto low-ticket.' },
 
-  // FERRAMENTAS (verde-água) — nomeadas pelo que fazem
-  { id: 'f-aulas', label: 'Criar aulas interativas', type: 'ferramenta', areas: ['conteudo','educacao'], desc: 'Gera tutoriais HTML com digitação palavra-por-palavra. (skill: fazedor-de-aulas)' },
-  { id: 'f-sprints', label: 'Criar sprints educacionais', type: 'ferramenta', areas: ['conteudo','educacao'], desc: 'Monta sprints completos — outline, exercícios, materiais. (skill: sprint-educator)' },
-  { id: 'f-redes', label: 'Copy de redes sociais', type: 'ferramenta', areas: ['conteudo','marketing'], desc: 'Carrosséis, posts, reels. Fórmula P.R.S-A + Maxxima. (skill: conteudo-redes-sociais)' },
-  { id: 'f-maxxima', label: 'Copy Maxxima Anti-Caos', type: 'ferramenta', areas: ['marketing','conteudo'], desc: 'Landing, VSL, email, anúncio no sistema Maxxima. (skill: maxxima-anti-caos)' },
-  { id: 'f-lowticket', label: 'Criar produto low-ticket', type: 'ferramenta', areas: ['marketing'], desc: 'Método ILM — oferta, estrutura, página. (skill: lowmaxxima)' },
-  { id: 'f-mentoria', label: 'Mentoria 1-on-1', type: 'ferramenta', areas: ['educacao'], desc: 'Planejamento e acompanhamento de mentorados. (skill: mentoria)' },
-  { id: 'f-disc', label: 'DISC (geral)', type: 'ferramenta', areas: ['educacao'], desc: 'Enciclopédia DISC + gerador de relatórios. (skill: disc-assessment)' },
-  { id: 'f-disc-jovens', label: 'DISC Jovens', type: 'ferramenta', areas: ['educacao'], desc: 'DISC para 16-22 anos. (skill: disc-jovens)' },
-  { id: 'f-success', label: 'Success Insights', type: 'ferramenta', areas: ['educacao'], desc: 'Roda Success Insights — Anti-Caos. (skill: success-insights)' },
-  { id: 'f-softskills', label: 'Assessments Soft Skills', type: 'ferramenta', areas: ['educacao'], desc: 'Enciclopédia de assessments e ferramentas. (skill: softskills-assessments)' },
-  { id: 'f-brand', label: 'Brand do Kit Líder', type: 'ferramenta', areas: ['conteudo','marketing'], desc: 'Paleta, fontes, layouts oficiais. (skill: brand-kit)' },
-  { id: 'f-plano', label: 'Plano MVP + PRD', type: 'ferramenta', areas: ['tecnologia'], desc: 'Planejamento de projetos web — PRD, fases, roadmap. (skill: plano-mvp-prd)' },
-  { id: 'f-ideias', label: 'Avaliador de ideias', type: 'ferramenta', areas: ['marketing','conteudo'], desc: 'Testa nomes, títulos, tópicos com scores estilo VidIQ. (skill: ideias-score)' },
-  { id: 'f-audita', label: 'Auditar segurança', type: 'ferramenta', areas: ['tecnologia'], desc: 'Verifica apps online + máquina local. (skills: audita-maquina + api/security)' },
-  { id: 'f-email', label: 'Sequências de email', type: 'ferramenta', areas: ['marketing'], desc: 'Onboarding, nurture, carrinho abandonado. (plugin: marketing)' },
-  { id: 'f-vendas', label: 'Prospecção e vendas', type: 'ferramenta', areas: ['marketing'], desc: 'Cold email, pipeline review, forecast. (plugin: sales)' },
-  { id: 'f-design', label: 'Design (arte/poster)', type: 'ferramenta', areas: ['conteudo'], desc: 'Criar posters, PDFs, designs visuais. (skill: canvas-design)' },
-  { id: 'f-docs', label: 'Documentos (Word/PDF/PPT/Excel)', type: 'ferramenta', areas: ['conteudo'], desc: 'Criar e editar docx, xlsx, pptx, pdf. (plugin: anthropic-skills)' },
-
-  // INTEGRAÇÕES (azul) — só as que aparecem no dia a dia
-  { id: 'i-gmail', label: 'Gmail', type: 'integracao', areas: ['marketing','conteudo'], desc: 'Ler e escrever emails direto daqui.' },
-  { id: 'i-drive', label: 'Google Drive', type: 'integracao', areas: ['conteudo'], desc: 'Abrir, editar e criar arquivos no Drive.' },
-  { id: 'i-calendar', label: 'Google Calendar', type: 'integracao', areas: ['educacao','marketing'], desc: 'Agendar, criar e consultar eventos.' },
-  { id: 'i-canva', label: 'Canva', type: 'integracao', areas: ['conteudo'], desc: 'Criar e editar designs no Canva.' },
-  { id: 'i-supabase', label: 'Supabase', type: 'integracao', areas: ['tecnologia'], desc: 'Banco de dados dos apps — Anti-Caos.' },
-  { id: 'i-vercel', label: 'Vercel', type: 'integracao', areas: ['tecnologia'], desc: 'Onde os apps estão no ar.' },
-  { id: 'i-github', label: 'GitHub', type: 'integracao', areas: ['tecnologia'], desc: 'Código-fonte de todos os apps.' },
+  // FERRAMENTAS (nomeadas pelo que fazem)
+  { id: 'f-aulas', label: 'Criar aulas interativas', type: 'ferramenta', areas: ['conteudo','educacao'], desc: 'Gera tutoriais HTML com digitação palavra-por-palavra.' },
+  { id: 'f-sprints', label: 'Criar sprints educacionais', type: 'ferramenta', areas: ['conteudo','educacao'], desc: 'Monta sprints completos — outline, exercícios, materiais.' },
+  { id: 'f-redes', label: 'Copy de redes sociais', type: 'ferramenta', areas: ['conteudo','marketing'], desc: 'Carrosséis, posts, reels. Fórmula P.R.S-A + Maxxima.' },
+  { id: 'f-maxxima', label: 'Copy Maxxima', type: 'ferramenta', areas: ['marketing','conteudo'], desc: 'Landing, VSL, email, anúncio no sistema Maxxima.' },
+  { id: 'f-lowticket', label: 'Criar produto low-ticket', type: 'ferramenta', areas: ['marketing'], desc: 'Método ILM — oferta, estrutura, página.' },
+  { id: 'f-mentoria', label: 'Mentoria 1-on-1', type: 'ferramenta', areas: ['educacao'], desc: 'Planejamento e acompanhamento de mentorados.' },
+  { id: 'f-disc', label: 'DISC (geral)', type: 'ferramenta', areas: ['educacao'], desc: 'Enciclopédia DISC + gerador de relatórios.' },
+  { id: 'f-disc-jovens', label: 'DISC Jovens', type: 'ferramenta', areas: ['educacao'], desc: 'DISC para 16-22 anos.' },
+  { id: 'f-success', label: 'Success Insights', type: 'ferramenta', areas: ['educacao'], desc: 'Roda Success Insights — Anti-Caos.' },
+  { id: 'f-softskills', label: 'Assessments Soft Skills', type: 'ferramenta', areas: ['educacao'], desc: 'Enciclopédia de assessments e ferramentas.' },
+  { id: 'f-brand', label: 'Brand do Kit Líder', type: 'ferramenta', areas: ['conteudo','marketing'], desc: 'Paleta, fontes, layouts oficiais.' },
+  { id: 'f-plano', label: 'Plano MVP + PRD', type: 'ferramenta', areas: ['tecnologia'], desc: 'Planejamento de projetos web — PRD, fases, roadmap.' },
+  { id: 'f-ideias', label: 'Avaliador de ideias', type: 'ferramenta', areas: ['marketing','conteudo'], desc: 'Testa nomes, títulos, tópicos com scores estilo VidIQ.' },
+  { id: 'f-audita', label: 'Auditar segurança', type: 'ferramenta', areas: ['tecnologia'], desc: 'Verifica apps online + máquina local.' },
+  { id: 'f-email', label: 'Sequências de email', type: 'ferramenta', areas: ['marketing'], desc: 'Onboarding, nurture, carrinho abandonado.' },
+  { id: 'f-vendas', label: 'Prospecção e vendas', type: 'ferramenta', areas: ['marketing'], desc: 'Cold email, pipeline review, forecast.' },
+  { id: 'f-design', label: 'Design (arte/poster)', type: 'ferramenta', areas: ['conteudo'], desc: 'Criar posters, PDFs, designs visuais.' },
+  { id: 'f-docs', label: 'Documentos (Word/PDF/PPT/Excel)', type: 'ferramenta', areas: ['conteudo'], desc: 'Criar e editar docx, xlsx, pptx, pdf.' },
 ];
 
-// CONEXÕES: projeto ↔ ferramenta / integração
+// CONEXÕES
 const EDGES = [
-  // App de Assessments
-  ['p-assessment', 'f-disc'], ['p-assessment', 'f-softskills'], ['p-assessment', 'f-plano'],
-  ['p-assessment', 'i-supabase'], ['p-assessment', 'i-vercel'], ['p-assessment', 'i-github'],
+  // Hub central → áreas
+  ['anti-caos','area-tec'], ['anti-caos','area-con'], ['anti-caos','area-mkt'], ['anti-caos','area-edu'],
 
-  // Assessments Adultos V2
-  ['p-adultos', 'f-disc'], ['p-adultos', 'f-softskills'], ['p-adultos', 'f-plano'],
-  ['p-adultos', 'i-supabase'], ['p-adultos', 'i-vercel'], ['p-adultos', 'i-github'],
+  // Áreas → projetos
+  ['area-tec','p-assessment'], ['area-tec','p-adultos'], ['area-tec','p-lider'], ['area-tec','p-painel'],
+  ['area-edu','p-assessment'], ['area-edu','p-adultos'], ['area-edu','p-lider'], ['area-edu','p-tutoriais'],
+  ['area-edu','p-quest'], ['area-edu','p-livro'], ['area-edu','p-sprints'], ['area-edu','p-indice'],
+  ['area-con','p-tutoriais'], ['area-con','p-sprints'], ['area-con','p-recopedro'], ['area-con','p-livro'],
+  ['area-mkt','p-lider'], ['area-mkt','p-recopedro'], ['area-mkt','p-indice'], ['area-mkt','p-ltm'],
 
-  // Líder Anti-Caos
-  ['p-lider', 'f-maxxima'], ['p-lider', 'f-brand'], ['p-lider', 'f-plano'],
-  ['p-lider', 'f-email'], ['p-lider', 'f-redes'],
-  ['p-lider', 'i-supabase'], ['p-lider', 'i-vercel'], ['p-lider', 'i-github'],
+  // Áreas → ferramentas (grupos naturais)
+  ['area-tec','f-plano'], ['area-tec','f-audita'],
+  ['area-edu','f-disc'], ['area-edu','f-disc-jovens'], ['area-edu','f-success'], ['area-edu','f-softskills'], ['area-edu','f-mentoria'],
+  ['area-con','f-aulas'], ['area-con','f-sprints'], ['area-con','f-design'], ['area-con','f-docs'], ['area-con','f-brand'],
+  ['area-mkt','f-maxxima'], ['area-mkt','f-redes'], ['area-mkt','f-lowticket'], ['area-mkt','f-email'], ['area-mkt','f-vendas'], ['area-mkt','f-ideias'],
 
-  // Painel Claude
-  ['p-painel', 'f-audita'], ['p-painel', 'f-plano'],
-  ['p-painel', 'i-vercel'], ['p-painel', 'i-github'],
-
-  // Tutoriais Kit Líder
-  ['p-tutoriais', 'f-aulas'], ['p-tutoriais', 'f-brand'],
-  ['p-tutoriais', 'i-vercel'], ['p-tutoriais', 'i-github'],
-
-  // Rec o Pedro Economia
-  ['p-recopedro', 'f-redes'], ['p-recopedro', 'f-maxxima'],
-
-  // Índice de Caos
-  ['p-indice', 'f-ideias'], ['p-indice', 'f-softskills'],
-
-  // Em construção
-  ['p-sprints', 'f-sprints'], ['p-sprints', 'f-aulas'],
-  ['p-quest', 'f-disc-jovens'], ['p-quest', 'f-disc'],
-  ['p-livro', 'f-disc'], ['p-livro', 'f-docs'],
-  ['p-ltm', 'f-lowticket'], ['p-ltm', 'f-maxxima'], ['p-ltm', 'f-vendas'],
+  // Projetos → ferramentas específicas
+  ['p-assessment','f-disc'], ['p-assessment','f-softskills'],
+  ['p-adultos','f-disc'], ['p-adultos','f-softskills'],
+  ['p-lider','f-maxxima'], ['p-lider','f-brand'], ['p-lider','f-email'],
+  ['p-painel','f-audita'],
+  ['p-tutoriais','f-aulas'], ['p-tutoriais','f-brand'],
+  ['p-recopedro','f-redes'],
+  ['p-indice','f-ideias'],
+  ['p-sprints','f-sprints'],
+  ['p-quest','f-disc-jovens'],
+  ['p-livro','f-disc'], ['p-livro','f-docs'],
+  ['p-ltm','f-lowticket'], ['p-ltm','f-vendas'],
 ];
 
 // ── CYTOSCAPE ──────────────────────────────────────────────────────────────
 const TYPE_COLORS = {
+  hub:        { bg: '#1D1D1F', border: '#E8611A' },
   projeto:    { bg: '#E8611A', border: '#C44E14' },
   ferramenta: { bg: '#0D9488', border: '#0A6F68' },
-  integracao: { bg: '#3B82F6', border: '#1D4ED8' },
 };
-const TYPE_SIZES = { projeto: 56, ferramenta: 44, integracao: 38 };
-const TYPE_LABELS = { projeto: 'Projeto', ferramenta: 'Ferramenta', integracao: 'Integração' };
+const TYPE_SIZES = { hub: 110, projeto: 56, ferramenta: 44 };
+const TYPE_LABELS = { hub: 'Área', projeto: 'Projeto', ferramenta: 'Ferramenta' };
 
 const cy = cytoscape({
   container: document.getElementById('cy'),
@@ -295,6 +287,20 @@ const cy = cytoscape({
       }
     },
     {
+      selector: 'node[type="hub"]',
+      style: {
+        'color': '#FFFFFF',
+        'font-size': 14,
+        'font-weight': 700,
+        'text-valign': 'center',
+        'text-halign': 'center',
+        'text-margin-y': 0,
+        'text-outline-width': 0,
+        'text-max-width': 90,
+        'text-wrap': 'wrap',
+      }
+    },
+    {
       selector: 'edge',
       style: {
         'width': 1.2,
@@ -318,10 +324,10 @@ const cy = cytoscape({
     name: 'cose',
     animate: true,
     animationDuration: 800,
-    nodeRepulsion: 14000,
-    idealEdgeLength: 130,
+    nodeRepulsion: 16000,
+    idealEdgeLength: 140,
     edgeElasticity: 120,
-    gravity: 0.9,
+    gravity: 0.8,
     padding: 80,
     fit: true,
   },
@@ -330,7 +336,7 @@ const cy = cytoscape({
   maxZoom: 3,
 });
 
-// Filtros por área
+// Filtros
 let currentArea = 'all';
 document.querySelectorAll('.filter-chip').forEach(chip => {
   chip.addEventListener('click', () => {
