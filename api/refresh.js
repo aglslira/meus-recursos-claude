@@ -107,7 +107,7 @@ async function fetchGithubCommits(repo) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', 'https://painelclaude.anti-caos.app.br');
   res.setHeader('Cache-Control', 'no-store');
 
   const [vercelResults, netlifyResults, supabaseResults, githubResults] = await Promise.all([

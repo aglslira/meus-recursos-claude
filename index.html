@@ -653,6 +653,89 @@
   .refresh-btn.loading { opacity: 0.7; pointer-events: none; }
   .refresh-btn.loading::before { content: ""; }
 
+  /* Security button + modal */
+  .security-btn {
+    font-size: 13px; font-weight: 600; padding: 7px 14px;
+    background: #48484A; color: #fff; border: none; border-radius: 8px;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .security-btn:hover { background: #2C2C2E; }
+  .security-btn:active { transform: scale(0.96); }
+  .security-btn.loading { opacity: 0.7; pointer-events: none; }
+  .security-btn.has-critical { background: #D0342C; }
+  .security-btn.has-critical:hover { background: #A42820; }
+  .security-btn.has-warning { background: #D98F00; }
+  .security-btn.has-warning:hover { background: #A96E00; }
+  .security-btn.all-ok { background: #2E8B57; }
+  .security-btn.all-ok:hover { background: #236B44; }
+  .sec-summary {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    padding: 12px 14px; background: #F9F9FB; border-radius: 10px;
+    margin-bottom: 16px; font-size: 13px;
+  }
+  .sec-summary-badge {
+    padding: 4px 10px; border-radius: 20px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .sec-summary-badge.active { outline: 2px solid #E8611A; }
+  .sec-summary-badge.critical { background: #FDE7E4; color: #A42820; }
+  .sec-summary-badge.warning { background: #FEF3CF; color: #8A6200; }
+  .sec-summary-badge.info { background: #E0EBFB; color: #1C56A5; }
+  .sec-summary-badge.ok { background: #DFEEE4; color: #236B44; }
+  .sec-summary-badge.error { background: #EEE; color: #555; }
+  .sec-section { margin-bottom: 18px; }
+  .sec-section-title {
+    font-size: 14px; font-weight: 700; color: #1C1C1E;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .sec-section-title .count { color: #8E8E93; font-weight: 500; font-size: 12px; }
+  .sec-check {
+    padding: 10px 12px; background: #fff; border: 1px solid #E5E5EA;
+    border-radius: 8px; margin-bottom: 6px; display: flex; align-items: flex-start; gap: 10px;
+  }
+  .sec-check.hidden { display: none; }
+  .sec-check-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .sec-check-main { flex: 1; min-width: 0; }
+  .sec-check-label { font-size: 13px; font-weight: 600; color: #1C1C1E; margin-bottom: 2px; }
+  .sec-check-detail { font-size: 12px; color: #3A3A3C; line-height: 1.4; }
+  .sec-check-fix {
+    margin-top: 6px; padding: 6px 9px; background: #F2F2F7;
+    border-radius: 6px; font-family: ui-monospace, monospace;
+    font-size: 11px; color: #1C1C1E; word-break: break-all;
+  }
+  .sec-check-docs {
+    font-size: 11px; color: #E8611A; text-decoration: none;
+    margin-top: 4px; display: inline-block;
+  }
+  .sec-check-docs:hover { text-decoration: underline; }
+  .sec-progress {
+    padding: 20px; text-align: center; color: #3A3A3C;
+    font-size: 13px; background: #F9F9FB; border-radius: 10px;
+  }
+  .sec-progress-step { margin-top: 4px; color: #8E8E93; font-size: 12px; }
+  .sec-shimmer {
+    display: inline-block; width: 60px; height: 12px;
+    background: linear-gradient(90deg, #E5E5EA 0%, #F2F2F7 50%, #E5E5EA 100%);
+    background-size: 200% 100%; animation: shimmer 1.5s infinite;
+    border-radius: 4px; vertical-align: middle;
+  }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .sec-external-links {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-top: 10px;
+  }
+  .sec-external-link {
+    padding: 8px 12px; background: #F2F2F7; border-radius: 8px;
+    text-decoration: none; color: #1C1C1E; font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+    transition: background 0.15s;
+  }
+  .sec-external-link:hover { background: #E5E5EA; }
+
   /* Referências panel */
   .refs-header {
     background: #FFF7F0;
@@ -755,6 +838,7 @@
     <div class="header-title-row">
       <h1>Meus Recursos no Claude</h1>
       <button class="refresh-btn" id="refresh-btn" title="Buscar status ao vivo dos projetos">🔄 Atualizar</button>
+      <button class="security-btn" id="security-btn" title="Auditoria de segurança completa">🛡️ Auditar</button>
     </div>
     <p>Clique em um card para explorar — André · abril 2026 <span class="refresh-ts" id="refresh-ts"></span></p>
   </header>
@@ -2484,6 +2568,256 @@ Em construção · revisão do produto.`,
       } finally {
         refreshBtn.classList.remove('loading');
         refreshBtn.textContent = '🔄 Atualizar';
+      }
+    });
+  }
+
+  // ── SECURITY AUDIT ────────────────────────────────────────────────────────
+  const securityBtn = document.getElementById('security-btn');
+
+  // Client-side scans (run in browser without API)
+  function runClientScans() {
+    const checks = [];
+    const html = document.documentElement.outerHTML;
+
+    // Scan 1: local paths in REFERENCES_DATA
+    let pathHits = 0;
+    try {
+      if (Array.isArray(REFERENCES_DATA)) {
+        for (const r of REFERENCES_DATA) {
+          if (r.path && /^\/(Users|home)\//.test(r.path)) pathHits++;
+        }
+      }
+    } catch {}
+    checks.push({
+      id: 'client-paths',
+      category: 'dashboard',
+      scope: 'REFERENCES_DATA',
+      label: 'Caminhos locais expostos no HTML',
+      status: pathHits > 0 ? 'warning' : 'ok',
+      detail: pathHits > 0
+        ? `${pathHits} arquivo(s) com path absoluto /Users/ visível publicamente.`
+        : 'Nenhum path local exposto.',
+      fix: pathHits > 0 ? 'Remover campo "path" do REFERENCES_DATA antes do embed. Editar a skill atualiza-painel-claude.' : null,
+      docsUrl: null,
+    });
+
+    // Scan 2: secret patterns in HTML
+    const secretMatches = [];
+    const patterns = [
+      { name: 'GitHub PAT', re: /\bghp_[A-Za-z0-9]{36}\b/ },
+      { name: 'AWS Key', re: /\bAKIA[0-9A-Z]{16}\b/ },
+      { name: 'Stripe Live', re: /\bsk_live_[0-9a-zA-Z]{24,}\b/ },
+      { name: 'Google API', re: /\bAIza[0-9A-Za-z_-]{35}\b/ },
+      { name: 'Slack Token', re: /\bxox[baprs]-[0-9a-zA-Z-]{10,}\b/ },
+      { name: 'Private Key', re: /-----BEGIN (RSA |EC |)?PRIVATE KEY-----/ },
+    ];
+    for (const p of patterns) {
+      if (p.re.test(html)) secretMatches.push(p.name);
+    }
+    checks.push({
+      id: 'client-secrets',
+      category: 'dashboard',
+      scope: 'index.html',
+      label: 'Padrões de secret no HTML',
+      status: secretMatches.length > 0 ? 'critical' : 'ok',
+      detail: secretMatches.length > 0
+        ? `PADRÃO ENCONTRADO: ${secretMatches.join(', ')}. Audite imediatamente.`
+        : 'Nenhum padrão de secret detectado no HTML público.',
+      fix: secretMatches.length > 0 ? 'Remova o secret do código e rotacione a credencial.' : null,
+      docsUrl: null,
+    });
+
+    return checks;
+  }
+
+  // Check CORS on /api/refresh (separate async)
+  async function checkCorsOnRefresh() {
+    try {
+      const res = await fetch('/api/refresh', { method: 'GET' });
+      const acao = res.headers.get('access-control-allow-origin');
+      if (acao === '*') {
+        return {
+          id: 'client-cors',
+          category: 'dashboard',
+          scope: '/api/refresh',
+          label: 'CORS da API',
+          status: 'warning',
+          detail: 'Access-Control-Allow-Origin: * — qualquer site pode chamar a API.',
+          fix: "Trocar em api/refresh.js: res.setHeader('Access-Control-Allow-Origin', 'https://painelclaude.anti-caos.app.br');",
+          docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS',
+        };
+      }
+      return {
+        id: 'client-cors',
+        category: 'dashboard',
+        scope: '/api/refresh',
+        label: 'CORS da API',
+        status: 'ok',
+        detail: `Origin restrito a ${acao || 'same-origin'}.`,
+        fix: null,
+        docsUrl: null,
+      };
+    } catch (e) {
+      return {
+        id: 'client-cors',
+        category: 'dashboard',
+        scope: '/api/refresh',
+        label: 'CORS da API',
+        status: 'error',
+        detail: 'Não foi possível verificar CORS: ' + (e.message || 'erro'),
+        fix: null,
+        docsUrl: null,
+      };
+    }
+  }
+
+  // ── SECURITY MODAL RENDERER ───────────────────────────────────────────────
+  const CATEGORY_LABELS = {
+    secrets: '🔒 Secrets & Credenciais',
+    database: '🗄️ Banco de dados',
+    access: '🌐 Controle de acesso',
+    headers: '🛡️ Headers HTTP',
+    ssl: '🔐 SSL/TLS',
+    dashboard: '📄 Dashboard próprio',
+  };
+  const STATUS_ICON = { critical: '🔴', warning: '🟡', info: 'ℹ️', ok: '✅', error: '⚠️' };
+  let currentFilter = null;
+
+  function escapeHtmlSec(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function renderSecurityResults(data) {
+    const modal = document.getElementById('skillModal');
+    document.getElementById('modalIcon').textContent = '🛡️';
+    document.getElementById('modalIcon').className = 'skill-modal-icon i-sec';
+    document.getElementById('modalName').textContent = 'Auditoria de Segurança';
+    const d = data.discovered || {};
+    document.getElementById('modalTagline').textContent =
+      `${d.githubRepos || 0} repos · ${d.vercelProjects || 0} projetos Vercel · ${d.supabaseProjects || 0} Supabase · ${d.domains || 0} domínios`;
+
+    const s = data.summary || {};
+    const total = (s.critical || 0) + (s.warning || 0) + (s.info || 0) + (s.ok || 0) + (s.error || 0);
+    let html = '<div class="sec-summary">';
+    html += `<span class="sec-summary-badge critical" data-filter="critical">🔴 ${s.critical || 0} críticos</span>`;
+    html += `<span class="sec-summary-badge warning" data-filter="warning">🟡 ${s.warning || 0} avisos</span>`;
+    html += `<span class="sec-summary-badge info" data-filter="info">ℹ️ ${s.info || 0} info</span>`;
+    html += `<span class="sec-summary-badge ok" data-filter="ok">✅ ${s.ok || 0} ok</span>`;
+    html += `<span class="sec-summary-badge error" data-filter="error">⚠️ ${s.error || 0} erros</span>`;
+    html += `<span style="margin-left:auto; color:#8E8E93; font-size:12px;">${total} checks · ${Math.round((data.elapsedMs || 0) / 1000)}s</span>`;
+    html += '</div>';
+
+    // Group checks by category
+    const byCategory = {};
+    for (const c of data.checks || []) {
+      (byCategory[c.category] = byCategory[c.category] || []).push(c);
+    }
+
+    const order = ['secrets', 'database', 'access', 'headers', 'ssl', 'dashboard'];
+    for (const cat of order) {
+      const items = byCategory[cat];
+      if (!items || items.length === 0) continue;
+      html += `<div class="sec-section" data-category="${cat}">`;
+      html += `<div class="sec-section-title">${CATEGORY_LABELS[cat] || cat} <span class="count">· ${items.length}</span></div>`;
+      for (const c of items) {
+        html += `<div class="sec-check" data-status="${c.status}">`;
+        html += `<span class="sec-check-icon">${STATUS_ICON[c.status] || '•'}</span>`;
+        html += `<div class="sec-check-main">`;
+        html += `<div class="sec-check-label">${escapeHtmlSec(c.label)}</div>`;
+        html += `<div class="sec-check-detail">${escapeHtmlSec(c.detail)}</div>`;
+        if (c.fix) html += `<div class="sec-check-fix">${escapeHtmlSec(c.fix)}</div>`;
+        if (c.docsUrl) html += `<a class="sec-check-docs" href="${escapeHtmlSec(c.docsUrl)}" target="_blank" rel="noopener">Docs ↗</a>`;
+        html += `</div></div>`;
+      }
+      html += `</div>`;
+    }
+
+    // External checks (HIBP + GitGuardian)
+    html += `<div class="sec-section">`;
+    html += `<div class="sec-section-title">🌐 Verificações manuais</div>`;
+    html += `<div class="sec-external-links">`;
+    html += `<a class="sec-external-link" href="https://haveibeenpwned.com/account/andre%40softskills.com.br" target="_blank" rel="noopener">🔐 HaveIBeenPwned — verifique seu email (grátis)</a>`;
+    html += `<a class="sec-external-link" href="https://dashboard.gitguardian.com/auth/signup" target="_blank" rel="noopener">🚨 GitGuardian — monitoramento contínuo de secrets (grátis via GitHub App)</a>`;
+    html += `<a class="sec-external-link" href="https://securityheaders.com/?q=painelclaude.anti-caos.app.br" target="_blank" rel="noopener">🛡️ SecurityHeaders.com — segunda opinião de headers</a>`;
+    html += `</div></div>`;
+
+    document.getElementById('modalBody').innerHTML = html;
+
+    // Wire filter badges
+    modal.querySelectorAll('.sec-summary-badge').forEach(b => {
+      b.addEventListener('click', () => {
+        const f = b.dataset.filter;
+        if (currentFilter === f) {
+          currentFilter = null;
+          modal.querySelectorAll('.sec-summary-badge').forEach(x => x.classList.remove('active'));
+          modal.querySelectorAll('.sec-check').forEach(x => x.classList.remove('hidden'));
+        } else {
+          currentFilter = f;
+          modal.querySelectorAll('.sec-summary-badge').forEach(x => x.classList.toggle('active', x === b));
+          modal.querySelectorAll('.sec-check').forEach(x => {
+            x.classList.toggle('hidden', x.dataset.status !== f);
+          });
+        }
+      });
+    });
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    // Update button color based on results
+    if (securityBtn) {
+      securityBtn.classList.remove('has-critical', 'has-warning', 'all-ok');
+      if (s.critical > 0) securityBtn.classList.add('has-critical');
+      else if (s.warning > 0) securityBtn.classList.add('has-warning');
+      else securityBtn.classList.add('all-ok');
+    }
+  }
+
+  function showSecurityProgress(msg) {
+    const modal = document.getElementById('skillModal');
+    document.getElementById('modalIcon').textContent = '🛡️';
+    document.getElementById('modalName').textContent = 'Auditoria de Segurança';
+    document.getElementById('modalTagline').textContent = 'Escaneando recursos…';
+    document.getElementById('modalBody').innerHTML =
+      `<div class="sec-progress">⏳ ${escapeHtmlSec(msg || 'Iniciando auditoria')}…<div class="sec-progress-step">Pode demorar até 60s (SSL Labs é lento)</div></div>`;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  if (securityBtn) {
+    securityBtn.addEventListener('click', async () => {
+      securityBtn.classList.add('loading');
+      securityBtn.textContent = '⏳ Auditando…';
+      showSecurityProgress('Descobrindo recursos em Vercel, GitHub, Supabase');
+
+      try {
+        // Run client scans + API call + CORS check in parallel
+        const clientChecks = runClientScans();
+        const [secRes, corsCheck] = await Promise.all([
+          fetch('/api/security').then(r => r.ok ? r.json() : Promise.reject('HTTP ' + r.status)),
+          checkCorsOnRefresh(),
+        ]);
+
+        // Merge client checks into the response
+        secRes.checks = [...(secRes.checks || []), ...clientChecks, corsCheck];
+        // Recompute summary
+        const summary = { critical: 0, warning: 0, info: 0, ok: 0, error: 0 };
+        for (const c of secRes.checks) {
+          if (summary[c.status] !== undefined) summary[c.status]++;
+        }
+        secRes.summary = summary;
+
+        renderSecurityResults(secRes);
+      } catch (err) {
+        console.error('[security]', err);
+        document.getElementById('modalBody').innerHTML =
+          `<div class="sec-progress" style="color:#A42820;">❌ Erro: ${escapeHtmlSec(String(err))}<div class="sec-progress-step">Verifique se os tokens estão configurados no Vercel e se o deploy do api/security.js foi concluído.</div></div>`;
+      } finally {
+        securityBtn.classList.remove('loading');
+        securityBtn.textContent = '🛡️ Auditar';
       }
     });
   }
