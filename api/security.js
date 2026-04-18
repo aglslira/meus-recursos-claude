@@ -118,8 +118,10 @@ async function checkGithubSecretAlerts(token, repo) {
         'https://docs.github.com/code-security/secret-scanning');
     }
     if (res.status === 403) {
-      return mkCheck(id, 'secrets', repo.full_name, `Secret scanning — ${repo.name}`, 'error',
-        'Token GitHub sem scope security_events.', null, null);
+      return mkCheck(id, 'secrets', repo.full_name, `Secret scanning — ${repo.name}`, 'info',
+        'Token GitHub sem scope security_events — regenere com esse scope pra habilitar este check.',
+        'Regenere o token em: https://github.com/settings/tokens → Edit → marque "security_events" → Regenerate token → atualize GITHUB_TOKEN no Vercel',
+        'https://docs.github.com/code-security/secret-scanning');
     }
     const data = await safeJson(res);
     if (!Array.isArray(data)) {
@@ -274,7 +276,9 @@ async function checkSupabaseAdvisors(token, project) {
   try {
     const res = await fetchWithAuth(
       `https://api.supabase.com/v1/projects/${project.id}/advisors/security`,
-      token
+      token,
+      null,
+      15000
     );
     if (res.status === 404 || res.status === 400) {
       // advisors endpoint may not be available; fallback to assume ok
@@ -311,29 +315,43 @@ async function checkSupabaseAdvisors(token, project) {
 
 async function checkObservatory(host) {
   const id = `obs-${host}`;
+  const docsUrl = 'https://developer.mozilla.org/en-US/observatory/analyze?host=' + encodeURIComponent(host);
   try {
-    const ctl = new AbortController();
-    const t = setTimeout(() => ctl.abort(), 15000);
-    const res = await fetch(
+    // Step 1: trigger scan (POST)
+    const ctl1 = new AbortController();
+    const t1 = setTimeout(() => ctl1.abort(), 10000);
+    await fetch(
       `https://observatory-api.mdn.mozilla.net/api/v2/analyze?host=${encodeURIComponent(host)}`,
-      { method: 'POST', signal: ctl.signal }
-    ).finally(() => clearTimeout(t));
-    const data = await safeJson(res);
-    if (!data || !data.grade) {
-      return mkCheck(id, 'headers', host, `Observatory — ${host}`, 'error',
-        'Scan não retornou grade.', null, null);
+      { method: 'POST', signal: ctl1.signal }
+    ).catch(() => null).finally(() => clearTimeout(t1));
+
+    // Step 2: poll GET for result (up to 3 tries, 2s apart)
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await new Promise(r => setTimeout(r, 2000));
+      const ctl2 = new AbortController();
+      const t2 = setTimeout(() => ctl2.abort(), 8000);
+      const res = await fetch(
+        `https://observatory-api.mdn.mozilla.net/api/v2/analyze?host=${encodeURIComponent(host)}`,
+        { signal: ctl2.signal }
+      ).catch(() => null).finally(() => clearTimeout(t2));
+      if (!res) continue;
+      const data = await safeJson(res);
+      if (data && data.grade) {
+        const grade = data.grade;
+        const score = data.score;
+        const status = /^A/.test(grade) ? 'ok' : /^B/.test(grade) ? 'warning' : 'critical';
+        return mkCheck(id, 'headers', host, `Observatory — ${host}`, status,
+          `Grade ${grade} (${score}/100)`, null, docsUrl,
+          { scoreLetter: grade, scoreNumber: score });
+      }
     }
-    const grade = data.grade;
-    const score = data.score;
-    const status = /^A/.test(grade) ? 'ok' : /^B/.test(grade) ? 'warning' : 'critical';
-    return mkCheck(id, 'headers', host, `Observatory — ${host}`, status,
-      `Grade ${grade} (${score}/100)`,
-      'Revise em: https://developer.mozilla.org/en-US/observatory/analyze?host=' + encodeURIComponent(host),
-      'https://developer.mozilla.org/en-US/observatory',
-      { scoreLetter: grade, scoreNumber: score });
+    return mkCheck(id, 'headers', host, `Observatory — ${host}`, 'info',
+      'Scan iniciado. Recarregue e clique Auditar em ~30s pra ver a nota.',
+      null, docsUrl);
   } catch (e) {
-    return mkCheck(id, 'headers', host, `Observatory — ${host}`, 'error',
-      `Erro: ${e.message || 'desconhecido'}`, null, null);
+    return mkCheck(id, 'headers', host, `Observatory — ${host}`, 'info',
+      'Scan não pôde completar agora. Tente novamente em ~30s.',
+      null, docsUrl);
   }
 }
 
