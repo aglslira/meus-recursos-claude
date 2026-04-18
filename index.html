@@ -244,45 +244,100 @@
   .i-pmgmt   { background: #F5F0FD; color: #7C3AED; }
   .i-generic { background: #E5E5EA; color: #6E6E73; }
 
-  /* ── PLUGINS PILLS ── */
-  .plugins-section {
-    margin-bottom: 36px;
-  }
+  /* ── PLUGINS SECTION ── */
+  .plugins-section { margin-bottom: 36px; }
   .plugins-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: #AEAEB2;
-    margin-bottom: 10px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    color: #AEAEB2; margin-bottom: 12px;
   }
-  .plugins-pills {
-    display: flex;
-    flex-wrap: wrap;
+  .plugins-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
+    margin-bottom: 16px;
   }
-  .plugin-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+  .plugin-card {
     background: #FFFFFF;
     border: 1.5px solid #E5E5EA;
-    border-radius: 999px;
-    padding: 6px 14px 6px 10px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #1D1D1F;
+    border-radius: 12px;
+    padding: 14px 14px 12px;
     transition: border-color 0.15s, box-shadow 0.15s;
-    cursor: default;
   }
-  .plugin-pill:hover {
+  .plugin-card:hover {
     border-color: #0D9488;
-    box-shadow: 0 2px 8px rgba(13,148,136,0.10);
+    box-shadow: 0 2px 10px rgba(13,148,136,0.09);
   }
-  .plugin-pill-icon {
-    font-size: 14px;
-    line-height: 1;
+  .plugin-card-header {
+    display: flex; align-items: center; gap: 9px; margin-bottom: 6px;
   }
+  .plugin-card-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .plugin-card-name {
+    font-size: 13px; font-weight: 600; color: #1D1D1F;
+  }
+  .plugin-card-desc {
+    font-size: 12px; color: #6E6E73; line-height: 1.55;
+    padding-left: 39px;
+  }
+
+  /* plugins disponíveis (não instalados) */
+  .plugins-available-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; user-select: none;
+    padding: 10px 14px;
+    background: #F2F2F7;
+    border: 1.5px solid #E5E5EA;
+    border-radius: 10px;
+    margin-bottom: 0;
+    transition: border-color 0.15s;
+  }
+  .plugins-available-toggle:hover { border-color: #AEAEB2; }
+  .plugins-available-toggle.open { border-radius: 10px 10px 0 0; border-color: #AEAEB2; margin-bottom: 0; }
+  .pat-label { font-size: 12px; font-weight: 600; color: #6E6E73; }
+  .pat-count {
+    font-size: 11px; background: #E5E5EA; border-radius: 20px;
+    padding: 2px 8px; color: #6E6E73; margin-left: 8px;
+  }
+  .pat-chevron { font-size: 10px; color: #AEAEB2; transition: transform 0.2s; }
+  .plugins-available-toggle.open .pat-chevron { transform: rotate(180deg); }
+
+  .plugins-available-body {
+    display: none;
+    border: 1.5px solid #AEAEB2;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+    padding: 10px;
+    background: #FAFAFA;
+  }
+  .plugins-available-body.open { display: block; }
+
+  .plugin-avail-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 8px;
+    border-radius: 8px;
+    transition: background 0.12s;
+  }
+  .plugin-avail-item:hover { background: #F2F2F7; }
+  .plugin-avail-icon {
+    width: 28px; height: 28px; border-radius: 7px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    background: #E5E5EA; color: #6E6E73;
+  }
+  .plugin-avail-info { flex: 1; }
+  .plugin-avail-name { font-size: 13px; font-weight: 600; color: #1D1D1F; margin-bottom: 2px; }
+  .plugin-avail-desc { font-size: 12px; color: #6E6E73; line-height: 1.5; }
+  .plugin-rec {
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.7px; padding: 2px 7px; border-radius: 4px;
+    white-space: nowrap; margin-top: 4px; display: inline-block;
+  }
+  .plugin-rec.yes  { background: #E6F4ED; color: #059669; }
+  .plugin-rec.maybe{ background: #FEFCE8; color: #D97706; }
+  .plugin-rec.no   { background: #F2F2F7; color: #AEAEB2; }
 
   /* apps */
   .apps-list { display: flex; flex-direction: column; gap: 8px; }
@@ -350,18 +405,177 @@
     </div>
   </div>
 
-  <!-- PLUGINS PILLS -->
+  <!-- PLUGINS SECTION -->
   <div class="plugins-section">
-    <div class="plugins-label">🧩 Plugins do Marketplace</div>
-    <div class="plugins-pills">
-      <div class="plugin-pill"><span class="plugin-pill-icon">📋</span>productivity</div>
-      <div class="plugin-pill"><span class="plugin-pill-icon">🔊</span>brand-voice</div>
-      <div class="plugin-pill"><span class="plugin-pill-icon">📣</span>marketing</div>
-      <div class="plugin-pill"><span class="plugin-pill-icon">💰</span>sales</div>
-      <div class="plugin-pill"><span class="plugin-pill-icon">🗺️</span>product-management</div>
-      <div class="plugin-pill"><span class="plugin-pill-icon">✏️</span>design</div>
-      <div class="plugin-pill"><span class="plugin-pill-icon">📑</span>pdf-viewer</div>
-      <div class="plugin-pill"><span class="plugin-pill-icon">🧩</span>cowork-plugin-management</div>
+    <div class="plugins-label">🧩 Plugins Instalados (8)</div>
+    <div class="plugins-grid">
+
+      <div class="plugin-card">
+        <div class="plugin-card-header">
+          <div class="plugin-card-icon" style="background:#EEF2FF;color:#4F46E5;">📋</div>
+          <div class="plugin-card-name">productivity</div>
+        </div>
+        <div class="plugin-card-desc">Mantém TASKS.md atualizado e aprende seu vocabulário de trabalho — siglas, projetos, nomes.</div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-card-header">
+          <div class="plugin-card-icon" style="background:#E6F4FD;color:#0284C7;">🔊</div>
+          <div class="plugin-card-name">brand-voice</div>
+        </div>
+        <div class="plugin-card-desc">Descobre materiais de marca, gera diretrizes de voz e aplica seu tom em qualquer conteúdo.</div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-card-header">
+          <div class="plugin-card-icon" style="background:#FEF0E6;color:#EA580C;">📣</div>
+          <div class="plugin-card-name">marketing</div>
+        </div>
+        <div class="plugin-card-desc">Cria conteúdo para todos os canais, planeja campanhas, escreve sequências de email e auditorias de SEO.</div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-card-header">
+          <div class="plugin-card-icon" style="background:#FEFCE8;color:#D97706;">💰</div>
+          <div class="plugin-card-name">sales</div>
+        </div>
+        <div class="plugin-card-desc">Pesquisa prospects, prepara calls, resume reuniões, cria outreach personalizado e analisa pipeline.</div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-card-header">
+          <div class="plugin-card-icon" style="background:#EDFAF7;color:#059669;">🗺️</div>
+          <div class="plugin-card-name">product-management</div>
+        </div>
+        <div class="plugin-card-desc">Escreve specs, atualiza roadmaps, planeja sprints e sintetiza pesquisa de usuários.</div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-card-header">
+          <div class="plugin-card-icon" style="background:#FDE8F0;color:#DB2777;">✏️</div>
+          <div class="plugin-card-name">design</div>
+        </div>
+        <div class="plugin-card-desc">Feedback estruturado de designs, auditoria de acessibilidade, specs para dev e UX copy.</div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-card-header">
+          <div class="plugin-card-icon" style="background:#FDE8E8;color:#DC2626;">📑</div>
+          <div class="plugin-card-name">pdf-viewer</div>
+        </div>
+        <div class="plugin-card-desc">Abre PDFs interativos no Claude para anotar, assinar e preencher formulários.</div>
+      </div>
+
+      <div class="plugin-card">
+        <div class="plugin-card-header">
+          <div class="plugin-card-icon" style="background:#F5F0FD;color:#7C3AED;">🧩</div>
+          <div class="plugin-card-name">cowork-plugin-management</div>
+        </div>
+        <div class="plugin-card-desc">Cria e personaliza plugins do zero para o seu fluxo de trabalho. Gera o arquivo .plugin final.</div>
+      </div>
+
+    </div>
+
+    <!-- Plugins disponíveis não instalados -->
+    <div class="plugins-available-toggle" id="pat-toggle">
+      <span>
+        <span class="pat-label">Disponíveis no marketplace que você não usa</span>
+        <span class="pat-count">17</span>
+      </span>
+      <span class="pat-chevron">▼</span>
+    </div>
+    <div class="plugins-available-body" id="pat-body">
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">💬</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Slack</div>
+          <div class="plugin-avail-desc">Integra com Slack — lê canais, envia mensagens, busca histórico de conversas.</div>
+          <span class="plugin-rec yes">✓ Indicado — se você usar Slack com alunos ou equipe</span>
+        </div>
+      </div>
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">🔍</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Enterprise Search</div>
+          <div class="plugin-avail-desc">Busca em todos os seus apps de uma vez — email, Drive, docs, wikis.</div>
+          <span class="plugin-rec yes">✓ Indicado — para achar materiais espalhados entre seus apps</span>
+        </div>
+      </div>
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">🎧</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Customer Support</div>
+          <div class="plugin-avail-desc">Triagem de tickets, rascunho de respostas, escalação de problemas e base de conhecimento.</div>
+          <span class="plugin-rec maybe">~ Considerar — para organizar suporte aos membros da Comunidade</span>
+        </div>
+      </div>
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">📊</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Data</div>
+          <div class="plugin-avail-desc">Escreve SQL, explora datasets e gera visualizações e dashboards.</div>
+          <span class="plugin-rec maybe">~ Considerar — útil para analisar resultados de assessments em escala</span>
+        </div>
+      </div>
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">⚖️</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Legal</div>
+          <div class="plugin-avail-desc">Revisão de contratos, triagem de NDAs e fluxos de compliance para jurídico interno.</div>
+          <span class="plugin-rec maybe">~ Considerar — para contratos com parceiros e clientes corporativos</span>
+        </div>
+      </div>
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">⚙️</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Operations</div>
+          <div class="plugin-avail-desc">Gestão de fornecedores, documentação de processos e gestão de mudanças.</div>
+          <span class="plugin-rec no">— Não indicado — muito corporativo para seu modelo solo/criador</span>
+        </div>
+      </div>
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">👥</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Human Resources</div>
+          <div class="plugin-avail-desc">Recrutamento, onboarding, avaliações de desempenho e análise de compensação.</div>
+          <span class="plugin-rec no">— Não indicado — voltado para RH de empresas, não criadores</span>
+        </div>
+      </div>
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">💻</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Engineering</div>
+          <div class="plugin-avail-desc">Standups, revisão de código, resposta a incidentes e postmortems para times de dev.</div>
+          <span class="plugin-rec no">— Não indicado — específico para times de engenharia de software</span>
+        </div>
+      </div>
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">💵</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Finance</div>
+          <div class="plugin-avail-desc">Lançamentos contábeis, reconciliação, demonstrações financeiras corporativas.</div>
+          <span class="plugin-rec no">— Não indicado — contabilidade corporativa complexa</span>
+        </div>
+      </div>
+
+      <div class="plugin-avail-item">
+        <div class="plugin-avail-icon">🏦</div>
+        <div class="plugin-avail-info">
+          <div class="plugin-avail-name">Wealth Management · Investment Banking · Financial Analysis · Private Equity · Equity Research · S&amp;P Global · Apollo</div>
+          <div class="plugin-avail-desc">Plugins do setor financeiro — DCF, LBOs, pitch decks de M&amp;A, due diligence, dados de mercado.</div>
+          <span class="plugin-rec no">— Não indicado — exclusivos para o mercado financeiro</span>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -873,6 +1087,16 @@
 </div>
 
 <script>
+  // plugins available toggle
+  const patToggle = document.getElementById('pat-toggle');
+  const patBody = document.getElementById('pat-body');
+  if (patToggle) {
+    patToggle.addEventListener('click', () => {
+      patToggle.classList.toggle('open');
+      patBody.classList.toggle('open');
+    });
+  }
+
   document.querySelectorAll('.summary-card').forEach(card => {
     card.addEventListener('click', () => {
       const target = card.dataset.target;
