@@ -462,12 +462,176 @@
   }
 
   /* double-click hint no acc-item de skills */
-  .acc-item[data-skill] { cursor: pointer; }
-  .acc-item[data-skill] .acc-name::after {
-    content: " · duplo clique para ler";
+  .acc-item[data-skill], .acc-item[data-project] { cursor: pointer; }
+  .acc-item[data-skill] .acc-name::after,
+  .acc-item[data-project] .acc-name::after {
+    content: " · duplo clique para detalhes";
     font-size: 10px; font-weight: 400;
     color: #AEAEB2; margin-left: 6px;
   }
+
+  /* ── PROJECT CARDS ── */
+  .project-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+  .project-status.online  { background: #E6F9EE; color: #0F9D58; }
+  .project-status.warning { background: #FEF3C7; color: #B45309; }
+  .project-status.offline { background: #FEE2E2; color: #B91C1C; }
+  .project-status.dev     { background: #E0E7FF; color: #4338CA; }
+  .project-status .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: currentColor;
+  }
+
+  .project-url {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1D1D1F;
+    text-decoration: none;
+    padding: 6px 10px;
+    background: #F2F2F7;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    border: 1px solid #E5E5EA;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .project-url:hover { border-color: #E8611A; background: #FFF7F0; color: #E8611A; }
+  .project-url::after { content: " ↗"; color: #AEAEB2; }
+
+  .project-stack-row {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 10px;
+  }
+  .stack-badge {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background: #F2F2F7;
+    color: #3A3A3C;
+    border: 1px solid #E5E5EA;
+    font-weight: 500;
+  }
+  .stack-badge.vercel   { background: #000; color: #fff; border-color: #000; }
+  .stack-badge.netlify  { background: #E6F9F7; color: #009486; border-color: #B3E8E3; }
+  .stack-badge.supabase { background: #ECFDF5; color: #059669; border-color: #A7F3D0; }
+  .stack-badge.github   { background: #24292E; color: #fff; border-color: #24292E; }
+
+  .project-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .project-stat {
+    background: #F2F2F7;
+    border-radius: 8px;
+    padding: 8px 10px;
+    border: 1px solid #E5E5EA;
+  }
+  .stat-label { font-size: 10px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .stat-value { font-size: 13px; color: #1D1D1F; font-weight: 600; margin-top: 2px; }
+
+  .project-actions {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 4px;
+  }
+  .project-actions a, .project-actions button {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 11px;
+    border-radius: 7px;
+    border: 1px solid #E5E5EA;
+    background: #FFFFFF;
+    color: #1D1D1F;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .project-actions a:hover, .project-actions button:hover {
+    border-color: #E8611A; color: #E8611A; background: #FFF7F0;
+  }
+  .project-actions .btn-primary {
+    background: #E8611A; color: #FFFFFF; border-color: #E8611A;
+  }
+  .project-actions .btn-primary:hover {
+    background: #C9501A; border-color: #C9501A; color: #FFFFFF;
+  }
+
+  /* Simpler card for "em construção" (no thumbnail) */
+  .project-card-dev .acc-body { padding-top: 4px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #1D1D1F;
+    color: #FFFFFF;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 2000;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ── PROMPT BUTTONS (no modal de projeto) ── */
+  .qp-section {
+    background: #FFF7F0;
+    border: 1px solid #FFE0CC;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 16px 0;
+  }
+  .qp-title {
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    color: #E8611A;
+    margin-bottom: 10px;
+  }
+  .qp-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font-family: inherit;
+    font-size: 13px;
+    color: #1D1D1F;
+    background: #FFFFFF;
+    border: 1px solid #FFE0CC;
+    border-radius: 8px;
+    padding: 9px 12px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .qp-btn:hover {
+    border-color: #E8611A;
+    background: #FFF0E0;
+    transform: translateX(2px);
+  }
+  .qp-btn::before {
+    content: "📋 ";
+    margin-right: 4px;
+    opacity: 0.6;
+  }
+  .qp-btn:last-child { margin-bottom: 0; }
 
   footer {
     margin-top: 48px;
@@ -496,6 +660,11 @@
 
   <!-- SUMMARY CARDS -->
   <div class="summary-grid" id="summary">
+    <div class="summary-card" data-target="projetos">
+      <div class="sc-icon">🎯</div>
+      <div class="sc-title">Meus Projetos</div>
+      <div class="sc-sub">7 no ar · 5 em construção</div>
+    </div>
     <div class="summary-card" data-target="skills">
       <div class="sc-icon">⚡</div>
       <div class="sc-title">Skills Pessoais</div>
@@ -1227,6 +1396,344 @@
 
   </div><!-- /panel-repos -->
 
+  <!-- ═══════════════════════════════════════
+       PANEL: PROJETOS (gerencial)
+  ════════════════════════════════════════ -->
+  <div class="panel" id="panel-projetos">
+    <div class="back-btn" id="back-projetos">↑ Voltar</div>
+
+    <div class="section-title">Em Produção (7)</div>
+
+    <!-- 1. app-assessment -->
+    <div class="acc-item" data-project="app-assessment">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#FFF1E6;color:#E8611A;">🎯</div>
+        <div class="acc-label">
+          <div class="acc-name">app-assessment</div>
+          <div class="acc-tagline">Plataforma de assessments Anti-Caos</div>
+        </div>
+        <span class="project-status online"><span class="dot"></span>online</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <a class="project-url" href="https://anti-caos.app.br" target="_blank">anti-caos.app.br</a>
+        <a class="repo-thumb-link" href="https://anti-caos.app.br" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://anti-caos.app.br" alt="app-assessment preview" loading="lazy">
+        </a>
+        <div class="project-stack-row">
+          <span class="stack-badge vercel">▲ Vercel</span>
+          <span class="stack-badge supabase">🗄️ Supabase</span>
+          <span class="stack-badge github">GitHub</span>
+        </div>
+        <div class="project-stats">
+          <div class="project-stat"><div class="stat-label">Último deploy</div><div class="stat-value"><!-- deploy:app-assessment -->ontem<!-- /deploy --></div></div>
+          <div class="project-stat"><div class="stat-label">Commits 7d</div><div class="stat-value"><!-- commits:app-assessment -->—<!-- /commits --></div></div>
+          <div class="project-stat"><div class="stat-label">Database</div><div class="stat-value"><!-- db:app-assessment -->healthy<!-- /db --></div></div>
+        </div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/app-assessment"'>📋 Abrir no Claude</button>
+          <a href="https://github.com/aglslira/app-assessment" target="_blank">GitHub ↗</a>
+          <a href="https://vercel.com/aglslira/app-assessment" target="_blank">Vercel ↗</a>
+          <a href="https://supabase.com/dashboard/project/ywzyneepdewrpperupac" target="_blank">🗄️ Supabase ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. app-assessments-adultos-v2 -->
+    <div class="acc-item" data-project="app-assessments-adultos-v2">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#FFF1E6;color:#E8611A;">👔</div>
+        <div class="acc-label">
+          <div class="acc-name">app-assessments-adultos-v2</div>
+          <div class="acc-tagline">Assessments Adultos · Comunidade Líder Anti-Caos</div>
+        </div>
+        <span class="project-status online"><span class="dot"></span>online</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <a class="project-url" href="https://lider.anti-caos.app.br" target="_blank">lider.anti-caos.app.br</a>
+        <a class="repo-thumb-link" href="https://lider.anti-caos.app.br" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://lider.anti-caos.app.br" alt="adultos-v2 preview" loading="lazy">
+        </a>
+        <div class="project-stack-row">
+          <span class="stack-badge vercel">▲ Vercel</span>
+          <span class="stack-badge supabase">🗄️ Supabase</span>
+          <span class="stack-badge github">GitHub</span>
+        </div>
+        <div class="project-stats">
+          <div class="project-stat"><div class="stat-label">Último deploy</div><div class="stat-value"><!-- deploy:adultos-v2 -->3 dias<!-- /deploy --></div></div>
+          <div class="project-stat"><div class="stat-label">Commits 7d</div><div class="stat-value"><!-- commits:adultos-v2 -->—<!-- /commits --></div></div>
+          <div class="project-stat"><div class="stat-label">Database</div><div class="stat-value"><!-- db:adultos-v2 -->healthy<!-- /db --></div></div>
+        </div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/APP Assessmente Adultos V2"'>📋 Abrir no Claude</button>
+          <a href="https://github.com/aglslira/app-assessments-adultos-v2" target="_blank">GitHub ↗</a>
+          <a href="https://vercel.com/aglslira/app-assessments-adultos-v2" target="_blank">Vercel ↗</a>
+          <a href="https://supabase.com/dashboard/project/gaaouwlicfitdhhtbgix" target="_blank">🗄️ Supabase ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. lider-anti-caos -->
+    <div class="acc-item" data-project="lider-anti-caos">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#EDFAF7;color:#059669;">🛡️</div>
+        <div class="acc-label">
+          <div class="acc-name">lider-anti-caos</div>
+          <div class="acc-tagline">Plataforma de kits e checklists para líderes</div>
+        </div>
+        <span class="project-status online"><span class="dot"></span>online</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <a class="project-url" href="https://lider-anti-caos.vercel.app" target="_blank">lider-anti-caos.vercel.app</a>
+        <a class="repo-thumb-link" href="https://lider-anti-caos.vercel.app" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://lider-anti-caos.vercel.app" alt="lider-anti-caos preview" loading="lazy">
+        </a>
+        <div class="project-stack-row">
+          <span class="stack-badge vercel">▲ Vercel</span>
+          <span class="stack-badge supabase">🗄️ Supabase</span>
+          <span class="stack-badge github">GitHub</span>
+        </div>
+        <div class="project-stats">
+          <div class="project-stat"><div class="stat-label">Último deploy</div><div class="stat-value"><!-- deploy:lider-anti-caos -->2 semanas<!-- /deploy --></div></div>
+          <div class="project-stat"><div class="stat-label">Commits 7d</div><div class="stat-value"><!-- commits:lider-anti-caos -->—<!-- /commits --></div></div>
+          <div class="project-stat"><div class="stat-label">Database</div><div class="stat-value"><!-- db:lider-anti-caos -->healthy<!-- /db --></div></div>
+        </div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/lider-anti-caos"'>📋 Abrir no Claude</button>
+          <a href="https://github.com/aglslira/lider-anti-caos" target="_blank">GitHub ↗</a>
+          <a href="https://vercel.com/aglslira/lider-anti-caos" target="_blank">Vercel ↗</a>
+          <a href="https://supabase.com/dashboard/project/kyrfusioyognvxuhflmn" target="_blank">🗄️ Supabase ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. tutoriais-kit-lider -->
+    <div class="acc-item" data-project="tutoriais-kit-lider">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#FEFCE8;color:#D97706;">📚</div>
+        <div class="acc-label">
+          <div class="acc-name">tutoriais-kit-lider</div>
+          <div class="acc-tagline">Tutoriais do Kit do Líder Indispensável</div>
+        </div>
+        <span class="project-status online"><span class="dot"></span>online</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <a class="project-url" href="https://klindispensavel.anti-caos.app.br" target="_blank">klindispensavel.anti-caos.app.br</a>
+        <a class="repo-thumb-link" href="https://klindispensavel.anti-caos.app.br" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://klindispensavel.anti-caos.app.br" alt="tutoriais preview" loading="lazy">
+        </a>
+        <div class="project-stack-row">
+          <span class="stack-badge vercel">▲ Vercel</span>
+          <span class="stack-badge github">GitHub</span>
+        </div>
+        <div class="project-stats">
+          <div class="project-stat"><div class="stat-label">Último deploy</div><div class="stat-value"><!-- deploy:tutoriais -->ontem<!-- /deploy --></div></div>
+          <div class="project-stat"><div class="stat-label">Commits 7d</div><div class="stat-value"><!-- commits:tutoriais -->—<!-- /commits --></div></div>
+          <div class="project-stat"><div class="stat-label">Status</div><div class="stat-value">estático</div></div>
+        </div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/kit-lider-indispensavel"'>📋 Abrir no Claude</button>
+          <a href="https://github.com/aglslira/kit-lider-indispensavel" target="_blank">GitHub ↗</a>
+          <a href="https://vercel.com/aglslira/tutoriais-kit-lider" target="_blank">Vercel ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. meus-recursos-andre (este painel) -->
+    <div class="acc-item" data-project="meus-recursos-andre">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#F2F2F7;color:#1D1D1F;">🏠</div>
+        <div class="acc-label">
+          <div class="acc-name">meus-recursos-andre</div>
+          <div class="acc-tagline">Este painel · dashboard pessoal</div>
+        </div>
+        <span class="project-status online"><span class="dot"></span>online</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <a class="project-url" href="https://meus-recursos-andre.netlify.app" target="_blank">meus-recursos-andre.netlify.app</a>
+        <a class="repo-thumb-link" href="https://meus-recursos-andre.netlify.app" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://meus-recursos-andre.netlify.app" alt="este painel preview" loading="lazy">
+        </a>
+        <div class="project-stack-row">
+          <span class="stack-badge netlify">Netlify</span>
+          <span class="stack-badge github">GitHub</span>
+        </div>
+        <div class="project-stats">
+          <div class="project-stat"><div class="stat-label">Último deploy</div><div class="stat-value"><!-- deploy:painel -->hoje<!-- /deploy --></div></div>
+          <div class="project-stat"><div class="stat-label">Commits 7d</div><div class="stat-value"><!-- commits:painel -->—<!-- /commits --></div></div>
+          <div class="project-stat"><div class="stat-label">Tipo</div><div class="stat-value">HTML estático</div></div>
+        </div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/meus-recursos-claude"'>📋 Abrir no Claude</button>
+          <a href="https://github.com/aglslira/meus-recursos-claude" target="_blank">GitHub ↗</a>
+          <a href="https://app.netlify.com/sites/meus-recursos-andre" target="_blank">Netlify ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. recopedroeconomia -->
+    <div class="acc-item" data-project="recopedroeconomia">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E6F4FD;color:#0284C7;">📈</div>
+        <div class="acc-label">
+          <div class="acc-name">recopedroeconomia</div>
+          <div class="acc-tagline">Site Netlify · Pedro Economia</div>
+        </div>
+        <span class="project-status online"><span class="dot"></span>online</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <a class="project-url" href="https://recopedroeconomia.netlify.app" target="_blank">recopedroeconomia.netlify.app</a>
+        <a class="repo-thumb-link" href="https://recopedroeconomia.netlify.app" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://recopedroeconomia.netlify.app" alt="recopedroeconomia preview" loading="lazy">
+        </a>
+        <div class="project-stack-row">
+          <span class="stack-badge netlify">Netlify</span>
+        </div>
+        <div class="project-stats">
+          <div class="project-stat"><div class="stat-label">Último deploy</div><div class="stat-value"><!-- deploy:recopedro -->—<!-- /deploy --></div></div>
+          <div class="project-stat"><div class="stat-label">Tipo</div><div class="stat-value">Site</div></div>
+          <div class="project-stat"><div class="stat-label">Status</div><div class="stat-value">estável</div></div>
+        </div>
+        <div class="project-actions">
+          <a href="https://app.netlify.com/sites/recopedroeconomia" target="_blank">Netlify ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. indicedecaos -->
+    <div class="acc-item" data-project="indicedecaos">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#FEF0E6;color:#EA580C;">📊</div>
+        <div class="acc-label">
+          <div class="acc-name">indicedecaos</div>
+          <div class="acc-tagline">Índice de Caos · calculadora e relatório</div>
+        </div>
+        <span class="project-status online"><span class="dot"></span>online</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <a class="project-url" href="https://indicedecaos.netlify.app" target="_blank">indicedecaos.netlify.app</a>
+        <a class="repo-thumb-link" href="https://indicedecaos.netlify.app" target="_blank">
+          <img src="https://image.thum.io/get/width/800/crop/500/https://indicedecaos.netlify.app" alt="indicedecaos preview" loading="lazy">
+        </a>
+        <div class="project-stack-row">
+          <span class="stack-badge netlify">Netlify</span>
+        </div>
+        <div class="project-stats">
+          <div class="project-stat"><div class="stat-label">Último deploy</div><div class="stat-value"><!-- deploy:indicedecaos -->—<!-- /deploy --></div></div>
+          <div class="project-stat"><div class="stat-label">Tipo</div><div class="stat-value">App</div></div>
+          <div class="project-stat"><div class="stat-label">Status</div><div class="stat-value">ativo</div></div>
+        </div>
+        <div class="project-actions">
+          <a href="https://app.netlify.com/sites/indicedecaos" target="_blank">Netlify ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top: 32px;">Em Construção (5)</div>
+
+    <!-- 8. Fazedor de Aulas -->
+    <div class="acc-item project-card-dev" data-project="fazedor-de-aulas">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#EDE9FE;color:#7C3AED;">🎬</div>
+        <div class="acc-label">
+          <div class="acc-name">Fazedor de Aulas</div>
+          <div class="acc-tagline">Ferramenta de produção de aulas educacionais</div>
+        </div>
+        <span class="project-status dev"><span class="dot"></span>em dev</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Projeto local em desenvolvimento. Ferramenta para estruturar e produzir aulas automaticamente a partir de outline e conteúdo de referência.</div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/Fazedor de Aulas"'>📋 Abrir no Claude</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. Sprints Educacionais -->
+    <div class="acc-item project-card-dev" data-project="sprints-educacionais">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#E6F7F5;color:#0D9488;">🎓</div>
+        <div class="acc-label">
+          <div class="acc-name">sprints-educacionais</div>
+          <div class="acc-tagline">Acervo e produção de sprints low-ticket</div>
+        </div>
+        <span class="project-status dev"><span class="dot"></span>em dev</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Acervo local de sprints educacionais criados. Usa a skill <em>sprint-educator</em> para estruturar, gerar one pages e materiais.</div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/sprints-educacionais"'>📋 Abrir no Claude</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. Quest DISC Jovens -->
+    <div class="acc-item project-card-dev" data-project="quest-disc-jovens">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#FEF9C3;color:#D97706;">🎮</div>
+        <div class="acc-label">
+          <div class="acc-name">Quest DISC Jovens</div>
+          <div class="acc-tagline">App DISC para jovens 16–22 anos</div>
+        </div>
+        <span class="project-status dev"><span class="dot"></span>em dev</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Versão jovem do DISC — linguagem gaming/RPG com 4 Personas (Hard, Vibe, Flow, Deep). Inclui Start-se Carreiras com impacto da IA.</div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/Quest DISC para jovens 16 a 22 anos"'>📋 Abrir no Claude</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11. Escrever Livro DISC -->
+    <div class="acc-item project-card-dev" data-project="livro-disc">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#F5F0FD;color:#7C3AED;">📖</div>
+        <div class="acc-label">
+          <div class="acc-name">Escrever Livro DISC</div>
+          <div class="acc-tagline">Livro sobre DISC e soft skills</div>
+        </div>
+        <span class="project-status dev"><span class="dot"></span>em dev</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Projeto de livro sobre DISC, combinações e aplicação em liderança — conteúdo estruturado e pesquisa em andamento.</div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/Escrever Livro DISC"'>📋 Abrir no Claude</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. Low Ticket Maxxima V2 -->
+    <div class="acc-item project-card-dev" data-project="maxxima-v2">
+      <div class="acc-header">
+        <div class="acc-icon" style="background:#FFF1E6;color:#E8611A;">🔥</div>
+        <div class="acc-label">
+          <div class="acc-name">Low Ticket Maxxima V2</div>
+          <div class="acc-tagline">Produto low-ticket · próxima versão</div>
+        </div>
+        <span class="project-status dev"><span class="dot"></span>em dev</span>
+        <div class="acc-chevron">▼</div>
+      </div>
+      <div class="acc-body">
+        <div class="acc-desc">Segunda versão da Imersão Low Ticket Milionário (Método ILM). Revisão de estrutura, oferta e funil.</div>
+        <div class="project-actions">
+          <button class="btn-primary" data-copy='claude "/Users/andreschwambach/Documents/Claude/Projects/Low Ticket Maxxima V2"'>📋 Abrir no Claude</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel-projetos -->
+
   <!-- SKILL MODAL -->
   <div class="skill-modal-overlay" id="skillModal">
     <div class="skill-modal">
@@ -1242,6 +1749,8 @@
       <div class="skill-modal-hint">Pressione Esc para fechar</div>
     </div>
   </div>
+
+  <div class="toast" id="toast">Copiado ✓</div>
 
   <footer>
     André <span class="footer-dot"></span> softskills.com.br <span class="footer-dot"></span> abril 2026
@@ -1267,8 +1776,10 @@
     });
   });
 
-  ['skills', 'plugins', 'apps', 'repos'].forEach(name => {
-    document.getElementById('back-' + name).addEventListener('click', () => {
+  ['skills', 'plugins', 'apps', 'repos', 'projetos'].forEach(name => {
+    const btn = document.getElementById('back-' + name);
+    if (!btn) return;
+    btn.addEventListener('click', () => {
       document.getElementById('panel-' + name).classList.remove('open');
       document.querySelectorAll('.summary-card').forEach(c => c.classList.remove('active'));
       document.getElementById('summary').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1468,6 +1979,346 @@
   document.getElementById('modalClose').addEventListener('click', closeSkillModal);
   modal.addEventListener('click', e => { if (e.target === modal) closeSkillModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSkillModal(); });
+
+  // ── TOAST + CLIPBOARD ─────────────────────────────────────────────────────
+
+  const toastEl = document.getElementById('toast');
+  let toastTimer = null;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2500);
+  }
+
+  function copyToClipboard(text, msg) {
+    const doFallback = () => {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      showToast(msg || 'Copiado ✓');
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast(msg || 'Copiado ✓'))
+        .catch(doFallback);
+    } else {
+      doFallback();
+    }
+  }
+
+  // Attach to all buttons with data-copy
+  document.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      copyToClipboard(btn.dataset.copy, 'Comando copiado — cole no terminal');
+    });
+  });
+
+  // ── PROJECTS DATA (for modal) ─────────────────────────────────────────────
+
+  const supabaseQs = [
+    "Quantas pessoas fizeram o assessment hoje?",
+    "Me mostra os resultados do [nome do usuário]",
+    "Quem começou mas ainda não terminou?",
+    "Qual o assessment mais completado esta semana?",
+    "Quantos usuários novos cadastraram hoje?"
+  ];
+  const siteQs = [
+    "O site está no ar agora?",
+    "Quando foi o último deploy?",
+    "Tem algum erro nos deploys recentes?"
+  ];
+  const repoQs = projectName => [
+    `O que mudou no ${projectName} esta semana?`,
+    `Me resume os últimos 10 commits do ${projectName}`,
+    `Quais arquivos mudaram mais no ${projectName} no último mês?`
+  ];
+
+  const PROJECTS_DATA = {
+    'app-assessment': {
+      icon: '🎯', iconStyle: 'background:#FFF1E6;color:#E8611A;',
+      name: 'app-assessment',
+      tagline: 'Plataforma de assessments Anti-Caos',
+      content: `## Sobre o projeto
+
+Plataforma principal de assessments comportamentais da Comunidade Anti-Caos. Rodando em **anti-caos.app.br** (domínio custom). Atende líderes adultos.
+
+## Stack
+
+- **Frontend/Backend:** Next.js na Vercel
+- **Database:** Supabase (anti-caos-assessments · sa-east-1)
+- **Repo:** aglslira/app-assessment (privado)
+
+## Links rápidos
+
+- 🌐 [anti-caos.app.br](https://anti-caos.app.br)
+- 📂 [GitHub](https://github.com/aglslira/app-assessment)
+- ▲ [Dashboard Vercel](https://vercel.com/aglslira/app-assessment)
+- 🗄️ [Supabase](https://supabase.com/dashboard/project/ywzyneepdewrpperupac)`,
+      questions: [...supabaseQs, ...siteQs, ...repoQs('app-assessment')]
+    },
+    'app-assessments-adultos-v2': {
+      icon: '👔', iconStyle: 'background:#FFF1E6;color:#E8611A;',
+      name: 'app-assessments-adultos-v2',
+      tagline: 'Assessments Adultos — versão 2',
+      content: `## Sobre o projeto
+
+Versão 2 dos assessments para adultos da Comunidade Líder Anti-Caos. Evolução da plataforma principal, rodando em **lider.anti-caos.app.br**.
+
+## Stack
+
+- **Frontend/Backend:** Next.js na Vercel
+- **Database:** Supabase (app-assessments-adultos-v2 · sa-east-1)
+- **Repo:** aglslira/app-assessments-adultos-v2 (privado)
+- **Pasta local:** \`APP Assessmente Adultos V2\`
+
+## Links rápidos
+
+- 🌐 [lider.anti-caos.app.br](https://lider.anti-caos.app.br)
+- 📂 [GitHub](https://github.com/aglslira/app-assessments-adultos-v2)
+- ▲ [Dashboard Vercel](https://vercel.com/aglslira/app-assessments-adultos-v2)
+- 🗄️ [Supabase](https://supabase.com/dashboard/project/gaaouwlicfitdhhtbgix)`,
+      questions: [...supabaseQs, ...siteQs, ...repoQs('app-assessments-adultos-v2')]
+    },
+    'lider-anti-caos': {
+      icon: '🛡️', iconStyle: 'background:#EDFAF7;color:#059669;',
+      name: 'lider-anti-caos',
+      tagline: 'Plataforma de kits e checklists para líderes',
+      content: `## Sobre o projeto
+
+Plataforma comunitária com kits, checklists e recursos para líderes. Rodando em **lider-anti-caos.vercel.app**.
+
+## Stack
+
+- **Frontend/Backend:** Next.js na Vercel
+- **Database:** Supabase (lider-anti-caos · sa-east-1)
+- **Repo:** aglslira/lider-anti-caos (privado)
+
+## Links rápidos
+
+- 🌐 [lider-anti-caos.vercel.app](https://lider-anti-caos.vercel.app)
+- 📂 [GitHub](https://github.com/aglslira/lider-anti-caos)
+- ▲ [Dashboard Vercel](https://vercel.com/aglslira/lider-anti-caos)
+- 🗄️ [Supabase](https://supabase.com/dashboard/project/kyrfusioyognvxuhflmn)`,
+      questions: [...supabaseQs, ...siteQs, ...repoQs('lider-anti-caos')]
+    },
+    'tutoriais-kit-lider': {
+      icon: '📚', iconStyle: 'background:#FEFCE8;color:#D97706;',
+      name: 'tutoriais-kit-lider',
+      tagline: 'Tutoriais do Kit do Líder Indispensável',
+      content: `## Sobre o projeto
+
+Site de tutoriais do produto **Kit do Líder Indispensável**. Estrutura navegável com vídeos e recursos organizados. Rodando em **klindispensavel.anti-caos.app.br**.
+
+## Stack
+
+- **Frontend:** Vercel (estático/híbrido)
+- **Repo:** aglslira/kit-lider-indispensavel (privado)
+
+## Links rápidos
+
+- 🌐 [klindispensavel.anti-caos.app.br](https://klindispensavel.anti-caos.app.br)
+- 📂 [GitHub](https://github.com/aglslira/kit-lider-indispensavel)
+- ▲ [Dashboard Vercel](https://vercel.com/aglslira/tutoriais-kit-lider)`,
+      questions: [...siteQs, ...repoQs('kit-lider-indispensavel')]
+    },
+    'meus-recursos-andre': {
+      icon: '🏠', iconStyle: 'background:#F2F2F7;color:#1D1D1F;',
+      name: 'meus-recursos-andre',
+      tagline: 'Este painel · dashboard pessoal',
+      content: `## Sobre o projeto
+
+Dashboard que você está vendo agora. HTML estático sem dependências, hospedado no Netlify. Atualizado diariamente via tarefa agendada (7h).
+
+## Stack
+
+- **Frontend:** HTML + CSS + JS em um arquivo (\`index.html\`)
+- **Hospedagem:** Netlify
+- **Repo:** aglslira/meus-recursos-claude (público)
+- **Pasta local:** \`meus-recursos-claude\`
+
+## Links rápidos
+
+- 🌐 [meus-recursos-andre.netlify.app](https://meus-recursos-andre.netlify.app)
+- 📂 [GitHub](https://github.com/aglslira/meus-recursos-claude)
+- 🌿 [Dashboard Netlify](https://app.netlify.com/sites/meus-recursos-andre)`,
+      questions: [
+        "O painel está com dados atualizados?",
+        "Quando foi o último deploy do painel?",
+        "Me resume o que mudou no painel esta semana"
+      ]
+    },
+    'recopedroeconomia': {
+      icon: '📈', iconStyle: 'background:#E6F4FD;color:#0284C7;',
+      name: 'recopedroeconomia',
+      tagline: 'Site Netlify · Pedro Economia',
+      content: `## Sobre o projeto
+
+Site hospedado no Netlify em **recopedroeconomia.netlify.app**.
+
+## Links rápidos
+
+- 🌐 [recopedroeconomia.netlify.app](https://recopedroeconomia.netlify.app)
+- 🌿 [Dashboard Netlify](https://app.netlify.com/sites/recopedroeconomia)`,
+      questions: siteQs
+    },
+    'indicedecaos': {
+      icon: '📊', iconStyle: 'background:#FEF0E6;color:#EA580C;',
+      name: 'indicedecaos',
+      tagline: 'Índice de Caos · calculadora e relatório',
+      content: `## Sobre o projeto
+
+Ferramenta de cálculo do Índice de Caos. Rodando em **indicedecaos.netlify.app**.
+
+## Links rápidos
+
+- 🌐 [indicedecaos.netlify.app](https://indicedecaos.netlify.app)
+- 🌿 [Dashboard Netlify](https://app.netlify.com/sites/indicedecaos)`,
+      questions: siteQs
+    },
+    'fazedor-de-aulas': {
+      icon: '🎬', iconStyle: 'background:#EDE9FE;color:#7C3AED;',
+      name: 'Fazedor de Aulas',
+      tagline: 'Ferramenta de produção de aulas educacionais',
+      content: `## Sobre o projeto
+
+Projeto local em desenvolvimento. Ferramenta para estruturar e produzir aulas a partir de outline e conteúdo de referência.
+
+**Pasta local:** \`~/Documents/Claude/Projects/Fazedor de Aulas\`
+
+## Status
+
+Em construção · sem deploy público ainda.`,
+      questions: [
+        "O que foi construído no Fazedor de Aulas até agora?",
+        "Qual o próximo passo do Fazedor de Aulas?",
+        "Me mostra a estrutura atual de arquivos"
+      ]
+    },
+    'sprints-educacionais': {
+      icon: '🎓', iconStyle: 'background:#E6F7F5;color:#0D9488;',
+      name: 'sprints-educacionais',
+      tagline: 'Acervo de sprints low-ticket',
+      content: `## Sobre o projeto
+
+Acervo local de sprints educacionais criados com a skill **sprint-educator**. Contém planos, one pages e materiais do aluno.
+
+**Pasta local:** \`~/Documents/Claude/Projects/sprints-educacionais\`
+
+## Como usar
+
+Ao ativar a skill \`sprint-educator\`, novos sprints são salvos aqui automaticamente.`,
+      questions: [
+        "Quais sprints já foram criados?",
+        "Me lista os sprints mais recentes com suas promessas",
+        "Qual sprint precisa de revisão?"
+      ]
+    },
+    'quest-disc-jovens': {
+      icon: '🎮', iconStyle: 'background:#FEF9C3;color:#D97706;',
+      name: 'Quest DISC Jovens',
+      tagline: 'App DISC para 16–22 anos',
+      content: `## Sobre o projeto
+
+Versão jovem do DISC — linguagem gaming/RPG com as 4 Personas (Hard 🎯, Vibe 🎤, Flow 🤝, Deep 🔬). Inclui o relatório **Start-se Carreiras** com impacto da IA por carreira.
+
+**Pasta local:** \`~/Documents/Claude/Projects/Quest DISC para jovens 16 a 22 anos\`
+
+## Status
+
+Em construção · versão do Pro adaptada para público 16–22.`,
+      questions: [
+        "O que já foi construído no Quest DISC Jovens?",
+        "Qual o próximo passo do app jovens?",
+        "Me mostra o questionário adaptado"
+      ]
+    },
+    'livro-disc': {
+      icon: '📖', iconStyle: 'background:#F5F0FD;color:#7C3AED;',
+      name: 'Escrever Livro DISC',
+      tagline: 'Livro sobre DISC e soft skills',
+      content: `## Sobre o projeto
+
+Projeto do livro sobre DISC, as 24 dimensões e aplicação prática em liderança.
+
+**Pasta local:** \`~/Documents/Claude/Projects/Escrever Livro DISC\`
+
+## Status
+
+Em construção · pesquisa e estruturação de conteúdo.`,
+      questions: [
+        "Quais capítulos já foram escritos?",
+        "Me mostra o outline atual do livro",
+        "Qual o próximo capítulo a escrever?"
+      ]
+    },
+    'maxxima-v2': {
+      icon: '🔥', iconStyle: 'background:#FFF1E6;color:#E8611A;',
+      name: 'Low Ticket Maxxima V2',
+      tagline: 'Imersão Low Ticket Milionário · v2',
+      content: `## Sobre o projeto
+
+Segunda versão da **Imersão Low Ticket Milionário** (Método ILM do Ricardo Maxxima). Revisão de estrutura, oferta e funil.
+
+**Pasta local:** \`~/Documents/Claude/Projects/Low Ticket Maxxima V2\`
+
+## Status
+
+Em construção · revisão do produto.`,
+      questions: [
+        "O que mudou da V1 para a V2?",
+        "Me mostra a estrutura atual da Maxxima V2",
+        "Qual a próxima etapa do lançamento?"
+      ]
+    }
+  };
+
+  function openProjectModal(key) {
+    const proj = PROJECTS_DATA[key];
+    if (!proj) return;
+    modalIcon.textContent = proj.icon;
+    modalIcon.setAttribute('style', proj.iconStyle + 'width:44px;height:44px;border-radius:12px;font-size:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;');
+    modalName.textContent = proj.name;
+    modalTag.textContent  = proj.tagline;
+
+    let body = mdToHtml(proj.content);
+
+    // Inject perguntas prontas section
+    if (proj.questions && proj.questions.length) {
+      let qs = '<div class="qp-section"><div class="qp-title">Perguntas prontas — clique para copiar</div>';
+      proj.questions.forEach(q => {
+        qs += `<button class="qp-btn" data-copy-q="${q.replace(/"/g, '&quot;')}">${q}</button>`;
+      });
+      qs += '</div>';
+      body = qs + body;
+    }
+
+    modalBody.innerHTML = body;
+
+    // Hook up the qp-btn click handlers
+    modalBody.querySelectorAll('.qp-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        copyToClipboard(btn.dataset.copyQ, 'Pergunta copiada — cole no Claude');
+      });
+    });
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Extend double-click to projects
+  document.querySelectorAll('.acc-item[data-project]').forEach(item => {
+    item.addEventListener('dblclick', e => {
+      e.stopPropagation();
+      openProjectModal(item.dataset.project);
+    });
+  });
 </script>
 </body>
 </html>
