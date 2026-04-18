@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa do Ecossistema — Claude</title>
+<script src="https://unpkg.com/cytoscape@3.30.2/dist/cytoscape.min.js"></script>
+<style>
+  /* Design tokens (mesmo padrão do painel) */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #F2F2F7;
+    color: #1D1D1F;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  header {
+    position: fixed; top: 0; left: 0; right: 0;
+    background: rgba(242,242,247,0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid #E5E5EA;
+    padding: 14px 22px 12px;
+    z-index: 20;
+  }
+  .header-bar { width: 48px; height: 4px; background: #E8611A; border-radius: 2px; margin-bottom: 10px; }
+  .header-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  header h1 { font-size: 20px; font-weight: 700; color: #1D1D1F; letter-spacing: -0.3px; flex: 1; }
+  header p { color: #6E6E73; font-size: 12px; margin-top: 4px; }
+  .back-link {
+    font-size: 13px; font-weight: 600; color: #E8611A;
+    text-decoration: none; padding: 6px 12px; border-radius: 8px;
+    background: #fff; border: 1px solid #E5E5EA;
+    transition: background 0.15s;
+  }
+  .back-link:hover { background: #F2F2F7; }
+
+  /* Filtros */
+  .filters {
+    position: fixed; top: 85px; left: 22px; z-index: 15;
+    background: #fff; border: 1px solid #E5E5EA; border-radius: 12px;
+    padding: 12px 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-width: 260px;
+  }
+  .filters-title {
+    font-size: 10px; font-weight: 700; color: #6E6E73;
+    letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .filter-group { display: flex; flex-wrap: wrap; gap: 6px; }
+  .filter-chip {
+    font-size: 12px; font-weight: 600; padding: 5px 10px;
+    border-radius: 14px; background: #F2F2F7; color: #3A3A3C;
+    cursor: pointer; user-select: none; border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .filter-chip:hover { background: #E5E5EA; }
+  .filter-chip.active { background: #E8611A; color: #fff; }
+  .filter-chip.active:hover { background: #C44E14; }
+
+  /* Legenda */
+  .legend {
+    position: fixed; bottom: 22px; left: 22px; z-index: 15;
+    background: #fff; border: 1px solid #E5E5EA; border-radius: 12px;
+    padding: 12px 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .legend-title { font-size: 10px; font-weight: 700; color: #6E6E73; letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #3A3A3C; margin-bottom: 4px; }
+  .legend-item:last-child { margin-bottom: 0; }
+  .legend-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px #E5E5EA; }
+
+  /* Canvas */
+  #cy {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #F2F2F7;
+  }
+
+  /* Detalhe do nó (modal inferior direito) */
+  .node-detail {
+    position: fixed; bottom: 22px; right: 22px; z-index: 15;
+    background: #fff; border: 1px solid #E5E5EA; border-radius: 14px;
+    padding: 16px 18px; box-shadow: 0 8px 28px rgba(0,0,0,0.10);
+    max-width: 320px; display: none;
+  }
+  .node-detail.open { display: block; }
+  .node-detail-close {
+    position: absolute; top: 10px; right: 10px;
+    width: 24px; height: 24px; border-radius: 50%;
+    background: #F2F2F7; border: none; cursor: pointer;
+    color: #6E6E73; font-size: 14px; display: flex;
+    align-items: center; justify-content: center;
+  }
+  .node-detail-close:hover { background: #E5E5EA; }
+  .node-detail-type {
+    font-size: 10px; font-weight: 700; color: #6E6E73;
+    letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .node-detail-name { font-size: 16px; font-weight: 700; color: #1D1D1F; margin-bottom: 6px; }
+  .node-detail-desc { font-size: 12px; color: #3A3A3C; line-height: 1.5; margin-bottom: 10px; }
+  .node-detail-section-title { font-size: 10px; font-weight: 700; color: #6E6E73; letter-spacing: 0.6px; text-transform: uppercase; margin-top: 8px; margin-bottom: 4px; }
+  .node-detail-connections { display: flex; flex-wrap: wrap; gap: 4px; }
+  .node-detail-connection {
+    font-size: 11px; padding: 3px 8px; background: #F2F2F7;
+    border-radius: 10px; color: #3A3A3C;
+  }
+
+  /* Controles (zoom/fit) */
+  .controls {
+    position: fixed; top: 100px; right: 22px; z-index: 15;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .ctrl-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: #fff; border: 1px solid #E5E5EA;
+    font-size: 16px; cursor: pointer; color: #1D1D1F;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .ctrl-btn:hover { background: #F2F2F7; border-color: #E8611A; }
+
+  @media (max-width: 720px) {
+    .filters { left: 12px; right: 12px; top: 100px; max-width: none; }
+    .legend { display: none; }
+    .node-detail { left: 12px; right: 12px; max-width: none; bottom: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-bar"></div>
+  <div class="header-row">
+    <a href="./index.html" class="back-link">← Painel</a>
+    <h1>Mapa do Ecossistema</h1>
+  </div>
+  <p>Clique em qualquer nó para ver detalhes e conexões — filtros por área em baixo</p>
+</header>
+
+<div class="filters" id="filters">
+  <div class="filters-title">Filtrar por área</div>
+  <div class="filter-group" id="area-filters">
+    <span class="filter-chip active" data-area="all">Tudo</span>
+    <span class="filter-chip" data-area="tecnologia">💻 Tecnologia</span>
+    <span class="filter-chip" data-area="conteudo">✍️ Conteúdo</span>
+    <span class="filter-chip" data-area="marketing">📣 Marketing</span>
+    <span class="filter-chip" data-area="educacao">🎓 Educação</span>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-title">Tipos</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#1D1D1F;"></span>Hub</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#E8611A;"></span>Projeto</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#0D9488;"></span>Skill</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#7C3AED;"></span>Plugin</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#3B82F6;"></span>App/Integração</div>
+</div>
+
+<div class="controls">
+  <button class="ctrl-btn" id="zoom-in" title="Aproximar">＋</button>
+  <button class="ctrl-btn" id="zoom-out" title="Afastar">−</button>
+  <button class="ctrl-btn" id="fit" title="Centralizar">◎</button>
+</div>
+
+<div id="cy"></div>
+
+<div class="node-detail" id="node-detail">
+  <button class="node-detail-close" id="node-detail-close">✕</button>
+  <div class="node-detail-type" id="nd-type">TIPO</div>
+  <div class="node-detail-name" id="nd-name">Nome</div>
+  <div class="node-detail-desc" id="nd-desc"></div>
+  <div class="node-detail-section-title" id="nd-conn-title" style="display:none;">Conectado com</div>
+  <div class="node-detail-connections" id="nd-connections"></div>
+</div>
+
+<script>
+// ── DADOS DO ECOSSISTEMA ───────────────────────────────────────────────────
+// Cada nó tem: id, label, type (hub/projeto/skill/plugin/app), areas[] (tecnologia/conteudo/marketing/educacao), desc
+// Edges ligam skills/plugins/apps aos projetos onde são usados.
+
+const NODES = [
+  // Hub central
+  { id: 'anti-caos', label: 'Comunidade Anti-Caos', type: 'hub', areas: ['tecnologia','conteudo','marketing','educacao'], desc: 'Ecossistema central — produtos, conteúdo e comunidade do André (softskills.com.br).' },
+
+  // Áreas (sub-hubs)
+  { id: 'area-tec', label: '💻 Tecnologia', type: 'hub', areas: ['tecnologia'], desc: 'Apps, plataformas e ferramentas que rodam online (Vercel, Supabase, GitHub).' },
+  { id: 'area-con', label: '✍️ Conteúdo', type: 'hub', areas: ['conteudo'], desc: 'Produção de conteúdo — aulas, tutoriais, sprints, design, texto.' },
+  { id: 'area-mkt', label: '📣 Marketing', type: 'hub', areas: ['marketing'], desc: 'Vendas, copy, funil, redes sociais, lançamentos.' },
+  { id: 'area-edu', label: '🎓 Educação', type: 'hub', areas: ['educacao'], desc: 'Cursos, assessments, frameworks e metodologias educacionais.' },
+
+  // Projetos (em produção)
+  { id: 'app-assessment', label: 'app-assessment', type: 'projeto', areas: ['tecnologia','educacao'], desc: 'Plataforma de assessments Anti-Caos — DISC, Soft Skills.', url: 'https://on.anti-caos.app.br' },
+  { id: 'app-adultos-v2', label: 'app-assessments-adultos-v2', type: 'projeto', areas: ['tecnologia','educacao'], desc: 'V2 dos assessments para adultos — Comunidade Líder Anti-Caos.' },
+  { id: 'lider-anti-caos', label: 'lider-anti-caos', type: 'projeto', areas: ['tecnologia','educacao','marketing'], desc: 'Plataforma de kits e checklists para líderes — Kit do Líder Indispensável.', url: 'https://gestao.anti-caos.app.br' },
+  { id: 'meus-recursos', label: 'meus-recursos-claude', type: 'projeto', areas: ['tecnologia'], desc: 'Este painel — dashboard pessoal com auditoria, refresh e mapa.', url: 'https://painelclaude.anti-caos.app.br' },
+  { id: 'tutoriais-kit', label: 'tutoriais-kit-lider', type: 'projeto', areas: ['conteudo','educacao'], desc: '6 tutoriais interativos do Kit do Líder — digitação palavra-por-palavra.', url: 'https://klindispensavel.anti-caos.app.br' },
+  { id: 'recopedro', label: 'recopedroeconomia', type: 'projeto', areas: ['conteudo','marketing'], desc: 'Site Netlify · Pedro Economia.' },
+  { id: 'indicedecaos', label: 'indicedecaos', type: 'projeto', areas: ['educacao','marketing'], desc: 'Índice de Caos — calculadora e relatório.' },
+
+  // Projetos em construção
+  { id: 'sprints-edu', label: 'sprints-educacionais', type: 'projeto', areas: ['conteudo','educacao'], desc: 'Em construção — acervo e produção de sprints low-ticket.' },
+  { id: 'quest-disc', label: 'Quest DISC Jovens', type: 'projeto', areas: ['educacao'], desc: 'Em construção — app DISC para jovens 16-22 anos.' },
+  { id: 'livro-disc', label: 'Livro DISC', type: 'projeto', areas: ['conteudo','educacao'], desc: 'Em construção — livro sobre DISC e soft skills.' },
+  { id: 'ltm-v2', label: 'Low Ticket Maxxima V2', type: 'projeto', areas: ['marketing'], desc: 'Em construção — próxima versão do produto low-ticket.' },
+
+  // Skills (as 15 próprias)
+  { id: 'skill-brand-kit', label: 'brand-kit', type: 'skill', areas: ['conteudo','marketing'], desc: 'Identidade visual do Kit do Líder — paleta, fontes, layouts.' },
+  { id: 'skill-plano-mvp', label: 'plano-mvp-prd', type: 'skill', areas: ['tecnologia'], desc: 'Gerador de Plano + MVP + PRD para projetos web.' },
+  { id: 'skill-mentoria', label: 'mentoria', type: 'skill', areas: ['educacao'], desc: 'Especialista em mentoria e desenvolvimento humano.' },
+  { id: 'skill-redes', label: 'conteudo-redes-sociais', type: 'skill', areas: ['conteudo','marketing'], desc: 'Carrosséis, posts, reels — Fórmula P.R.S-A + Maxxima.' },
+  { id: 'skill-disc-jovens', label: 'disc-jovens', type: 'skill', areas: ['educacao'], desc: 'DISC Jovens — Anti-Caos Start.' },
+  { id: 'skill-disc-assess', label: 'disc-assessment', type: 'skill', areas: ['educacao'], desc: 'Enciclopédia DISC + gerador de relatórios comportamentais.' },
+  { id: 'skill-ideias', label: 'ideias-score', type: 'skill', areas: ['marketing','conteudo'], desc: 'Avaliador automático de ideias (nomes, títulos, produtos).' },
+  { id: 'skill-sprint', label: 'sprint-educator', type: 'skill', areas: ['educacao','conteudo'], desc: 'Gerador de sprints educacionais low-ticket.' },
+  { id: 'skill-fazedor', label: 'fazedor-de-aulas', type: 'skill', areas: ['educacao','conteudo'], desc: 'Tutoriais interativos em HTML com digitação palavra-por-palavra.' },
+  { id: 'skill-audita', label: 'audita-maquina', type: 'skill', areas: ['tecnologia'], desc: 'Auditoria de segurança da máquina local — permissões, .env, secrets.' },
+  { id: 'skill-success', label: 'success-insights', type: 'skill', areas: ['educacao'], desc: 'Roda Success Insights — Anti-Caos.' },
+  { id: 'skill-softskills', label: 'softskills-assessments', type: 'skill', areas: ['educacao'], desc: 'Enciclopédia de assessments e ferramentas de soft skills.' },
+  { id: 'skill-lowmax', label: 'lowmaxxima', type: 'skill', areas: ['marketing','educacao'], desc: 'Criador de produtos Low Ticket — Método ILM.' },
+  { id: 'skill-maxxima', label: 'maxxima-anti-caos', type: 'skill', areas: ['marketing','conteudo'], desc: 'Sistema Maxxima completo — copy, landing, VSL, emails.' },
+  { id: 'skill-canvas', label: 'canvas-design', type: 'skill', areas: ['conteudo'], desc: 'Criação de arte visual (posters, PDFs, designs).' },
+
+  // Plugins (conjuntos)
+  { id: 'plugin-marketing', label: 'marketing', type: 'plugin', areas: ['marketing'], desc: 'Plugin com SEO audit, content creation, email sequences, campaign plans.' },
+  { id: 'plugin-sales', label: 'sales', type: 'plugin', areas: ['marketing'], desc: 'Plugin com call prep, pipeline review, outreach, forecast.' },
+  { id: 'plugin-brand', label: 'brand-voice', type: 'plugin', areas: ['conteudo','marketing'], desc: 'Plugin para descobrir, gerar e aplicar brand guidelines.' },
+  { id: 'plugin-pm', label: 'product-management', type: 'plugin', areas: ['tecnologia'], desc: 'Plugin com write-spec, roadmap, sprint planning, metrics review.' },
+  { id: 'plugin-design', label: 'design', type: 'plugin', areas: ['conteudo'], desc: 'Plugin com design critique, ux copy, accessibility review, handoff.' },
+  { id: 'plugin-productivity', label: 'productivity', type: 'plugin', areas: ['tecnologia'], desc: 'Plugin com task management, memória e dashboard de produtividade.' },
+  { id: 'plugin-anthropic', label: 'anthropic-skills', type: 'plugin', areas: ['tecnologia','conteudo'], desc: 'Plugin com PDF, DOCX, XLSX, PPTX, canvas-design, skill-creator.' },
+  { id: 'plugin-pdf', label: 'pdf-viewer', type: 'plugin', areas: ['conteudo'], desc: 'Plugin para abrir, anotar, assinar e preencher PDFs.' },
+
+  // Apps / integrações (MCPs)
+  { id: 'app-gmail', label: 'Gmail', type: 'app', areas: ['marketing','conteudo'], desc: 'MCP — ler/criar emails, buscar threads, drafts.' },
+  { id: 'app-supabase', label: 'Supabase', type: 'app', areas: ['tecnologia'], desc: 'MCP — bancos de dados, auth, storage, advisors de segurança.' },
+  { id: 'app-vercel', label: 'Vercel', type: 'app', areas: ['tecnologia'], desc: 'MCP — deployments, projetos, env vars, domains, firewall.' },
+  { id: 'app-netlify', label: 'Netlify', type: 'app', areas: ['tecnologia'], desc: 'MCP — sites, deploys, env vars, forms.' },
+  { id: 'app-github', label: 'GitHub', type: 'app', areas: ['tecnologia'], desc: 'Repositórios, commits, secret scanning, branch protection.' },
+  { id: 'app-calendar', label: 'Google Calendar', type: 'app', areas: ['educacao','marketing'], desc: 'MCP — eventos, agendamento, convites.' },
+  { id: 'app-drive', label: 'Google Drive', type: 'app', areas: ['conteudo'], desc: 'MCP — arquivos, documentos, pastas.' },
+  { id: 'app-canva', label: 'Canva', type: 'app', areas: ['conteudo'], desc: 'MCP — designs, exportação, brand kits.' },
+  { id: 'app-chrome', label: 'Claude in Chrome', type: 'app', areas: ['tecnologia'], desc: 'MCP — navegação web interativa para testes e tarefas.' },
+  { id: 'app-preview', label: 'Claude Preview', type: 'app', areas: ['tecnologia'], desc: 'MCP — preview de apps web em desenvolvimento.' },
+];
+
+// Conexões (edges)
+const EDGES = [
+  // Hub central → áreas
+  ['anti-caos', 'area-tec'], ['anti-caos', 'area-con'], ['anti-caos', 'area-mkt'], ['anti-caos', 'area-edu'],
+
+  // Áreas → projetos
+  ['area-tec', 'app-assessment'], ['area-tec', 'app-adultos-v2'], ['area-tec', 'lider-anti-caos'], ['area-tec', 'meus-recursos'],
+  ['area-edu', 'app-assessment'], ['area-edu', 'app-adultos-v2'], ['area-edu', 'lider-anti-caos'], ['area-edu', 'tutoriais-kit'],
+  ['area-edu', 'quest-disc'], ['area-edu', 'livro-disc'], ['area-edu', 'sprints-edu'], ['area-edu', 'indicedecaos'],
+  ['area-con', 'tutoriais-kit'], ['area-con', 'sprints-edu'], ['area-con', 'recopedro'], ['area-con', 'livro-disc'],
+  ['area-mkt', 'lider-anti-caos'], ['area-mkt', 'recopedro'], ['area-mkt', 'indicedecaos'], ['area-mkt', 'ltm-v2'],
+
+  // Projetos → skills que usam
+  ['lider-anti-caos', 'skill-maxxima'], ['lider-anti-caos', 'skill-brand-kit'], ['lider-anti-caos', 'skill-plano-mvp'],
+  ['app-assessment', 'skill-disc-assess'], ['app-assessment', 'skill-softskills'], ['app-assessment', 'skill-plano-mvp'],
+  ['app-adultos-v2', 'skill-disc-assess'], ['app-adultos-v2', 'skill-softskills'],
+  ['quest-disc', 'skill-disc-jovens'], ['quest-disc', 'skill-disc-assess'],
+  ['livro-disc', 'skill-disc-assess'],
+  ['tutoriais-kit', 'skill-fazedor'], ['tutoriais-kit', 'skill-brand-kit'],
+  ['sprints-edu', 'skill-sprint'], ['sprints-edu', 'skill-fazedor'],
+  ['ltm-v2', 'skill-lowmax'], ['ltm-v2', 'skill-maxxima'],
+  ['meus-recursos', 'skill-audita'], ['meus-recursos', 'skill-plano-mvp'],
+  ['recopedro', 'skill-redes'], ['recopedro', 'skill-maxxima'],
+  ['indicedecaos', 'skill-ideias'], ['indicedecaos', 'skill-softskills'],
+
+  // Projetos → plugins usados
+  ['lider-anti-caos', 'plugin-marketing'], ['lider-anti-caos', 'plugin-brand'],
+  ['meus-recursos', 'plugin-pm'], ['meus-recursos', 'plugin-productivity'],
+  ['tutoriais-kit', 'plugin-design'], ['tutoriais-kit', 'plugin-anthropic'],
+  ['ltm-v2', 'plugin-marketing'], ['ltm-v2', 'plugin-sales'],
+  ['recopedro', 'plugin-marketing'],
+  ['app-assessment', 'plugin-pm'], ['app-adultos-v2', 'plugin-pm'],
+
+  // Projetos → apps (integrações)
+  ['app-assessment', 'app-supabase'], ['app-assessment', 'app-vercel'], ['app-assessment', 'app-github'],
+  ['app-adultos-v2', 'app-supabase'], ['app-adultos-v2', 'app-vercel'], ['app-adultos-v2', 'app-github'],
+  ['lider-anti-caos', 'app-supabase'], ['lider-anti-caos', 'app-vercel'], ['lider-anti-caos', 'app-github'],
+  ['meus-recursos', 'app-vercel'], ['meus-recursos', 'app-github'], ['meus-recursos', 'app-netlify'],
+  ['tutoriais-kit', 'app-vercel'], ['tutoriais-kit', 'app-github'],
+  ['recopedro', 'app-netlify'],
+];
+
+// ── CYTOSCAPE SETUP ────────────────────────────────────────────────────────
+const TYPE_COLORS = {
+  hub:     { bg: '#1D1D1F', text: '#FFFFFF', border: '#E8611A' },
+  projeto: { bg: '#E8611A', text: '#FFFFFF', border: '#C44E14' },
+  skill:   { bg: '#0D9488', text: '#FFFFFF', border: '#0A6F68' },
+  plugin:  { bg: '#7C3AED', text: '#FFFFFF', border: '#5B21B6' },
+  app:     { bg: '#3B82F6', text: '#FFFFFF', border: '#1D4ED8' },
+};
+
+const TYPE_SIZES = { hub: 70, projeto: 50, skill: 36, plugin: 36, app: 32 };
+const TYPE_LABELS = { hub: 'Hub', projeto: 'Projeto', skill: 'Skill', plugin: 'Plugin', app: 'App/Integração' };
+
+const cy = cytoscape({
+  container: document.getElementById('cy'),
+  elements: [
+    ...NODES.map(n => ({
+      data: {
+        id: n.id, label: n.label, type: n.type, areas: n.areas,
+        desc: n.desc, url: n.url || null,
+        bg: TYPE_COLORS[n.type].bg, border: TYPE_COLORS[n.type].border,
+        size: TYPE_SIZES[n.type],
+      }
+    })),
+    ...EDGES.map(([s, t]) => ({ data: { id: `${s}__${t}`, source: s, target: t } })),
+  ],
+  style: [
+    {
+      selector: 'node',
+      style: {
+        'background-color': 'data(bg)',
+        'border-color': 'data(border)',
+        'border-width': 2,
+        'width': 'data(size)',
+        'height': 'data(size)',
+        'label': 'data(label)',
+        'font-family': '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
+        'font-weight': 600,
+        'font-size': 11,
+        'color': '#1D1D1F',
+        'text-outline-color': '#F2F2F7',
+        'text-outline-width': 3,
+        'text-valign': 'bottom',
+        'text-halign': 'center',
+        'text-margin-y': 5,
+        'text-wrap': 'wrap',
+        'text-max-width': 110,
+      }
+    },
+    {
+      selector: 'node[type="hub"]',
+      style: {
+        'color': '#FFFFFF',
+        'font-size': 13,
+        'text-valign': 'center',
+        'text-margin-y': 0,
+        'text-outline-width': 0,
+      }
+    },
+    {
+      selector: 'edge',
+      style: {
+        'width': 1.2,
+        'line-color': '#C7C7CC',
+        'curve-style': 'bezier',
+        'opacity': 0.5,
+      }
+    },
+    {
+      selector: 'node:selected',
+      style: {
+        'border-width': 4,
+        'border-color': '#E8611A',
+      }
+    },
+    {
+      selector: 'edge.highlighted',
+      style: {
+        'line-color': '#E8611A',
+        'width': 2.5,
+        'opacity': 1,
+        'z-index': 10,
+      }
+    },
+    {
+      selector: 'node.dim',
+      style: { 'opacity': 0.2 }
+    },
+    {
+      selector: 'edge.dim',
+      style: { 'opacity': 0.08 }
+    },
+  ],
+  layout: {
+    name: 'cose',
+    animate: true,
+    animationDuration: 800,
+    nodeRepulsion: 12000,
+    idealEdgeLength: 140,
+    edgeElasticity: 120,
+    gravity: 0.8,
+    padding: 80,
+    fit: true,
+  },
+  wheelSensitivity: 0.25,
+  minZoom: 0.3,
+  maxZoom: 3,
+});
+
+// ── FILTROS POR ÁREA ───────────────────────────────────────────────────────
+let currentArea = 'all';
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    const area = chip.dataset.area;
+    currentArea = area;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c === chip));
+
+    cy.batch(() => {
+      cy.nodes().forEach(n => {
+        const areas = n.data('areas') || [];
+        const show = area === 'all' || areas.includes(area);
+        n.style('display', show ? 'element' : 'none');
+      });
+      cy.edges().forEach(e => {
+        const src = e.source(); const tgt = e.target();
+        const show = src.style('display') !== 'none' && tgt.style('display') !== 'none';
+        e.style('display', show ? 'element' : 'none');
+      });
+    });
+  });
+});
+
+// ── CLICK EM NÓ: MOSTRAR DETALHE ───────────────────────────────────────────
+const nd = document.getElementById('node-detail');
+const ndType = document.getElementById('nd-type');
+const ndName = document.getElementById('nd-name');
+const ndDesc = document.getElementById('nd-desc');
+const ndConnTitle = document.getElementById('nd-conn-title');
+const ndConnections = document.getElementById('nd-connections');
+
+cy.on('tap', 'node', (evt) => {
+  const n = evt.target;
+
+  // Destacar conexões
+  cy.elements().removeClass('highlighted dim');
+  cy.elements().addClass('dim');
+  n.removeClass('dim');
+  const connectedEdges = n.connectedEdges();
+  connectedEdges.removeClass('dim').addClass('highlighted');
+  connectedEdges.connectedNodes().removeClass('dim');
+
+  // Popular modal
+  ndType.textContent = TYPE_LABELS[n.data('type')] || 'Nó';
+  ndName.textContent = n.data('label');
+  const desc = n.data('desc') || '';
+  const url = n.data('url');
+  ndDesc.innerHTML = desc + (url ? `<br><a href="${url}" target="_blank" rel="noopener" style="color:#E8611A; font-weight:600; font-size:11px;">↗ Abrir</a>` : '');
+
+  // Listar conexões
+  const connected = connectedEdges.connectedNodes().filter(x => x.id() !== n.id());
+  if (connected.length > 0) {
+    ndConnTitle.style.display = 'block';
+    ndConnections.innerHTML = '';
+    connected.forEach(c => {
+      const chip = document.createElement('span');
+      chip.className = 'node-detail-connection';
+      chip.textContent = c.data('label');
+      chip.style.cursor = 'pointer';
+      chip.addEventListener('click', () => {
+        cy.$(`#${c.id()}`).trigger('tap');
+        cy.center(c);
+      });
+      ndConnections.appendChild(chip);
+    });
+  } else {
+    ndConnTitle.style.display = 'none';
+    ndConnections.innerHTML = '';
+  }
+
+  nd.classList.add('open');
+});
+
+cy.on('tap', (evt) => {
+  if (evt.target === cy) {
+    // Clique no fundo limpa seleção
+    cy.elements().removeClass('highlighted dim');
+    nd.classList.remove('open');
+  }
+});
+
+document.getElementById('node-detail-close').addEventListener('click', () => {
+  nd.classList.remove('open');
+  cy.elements().removeClass('highlighted dim');
+});
+
+// ── CONTROLES ──────────────────────────────────────────────────────────────
+document.getElementById('zoom-in').addEventListener('click', () => {
+  cy.zoom({ level: cy.zoom() * 1.25, renderedPosition: { x: cy.width()/2, y: cy.height()/2 } });
+});
+document.getElementById('zoom-out').addEventListener('click', () => {
+  cy.zoom({ level: cy.zoom() / 1.25, renderedPosition: { x: cy.width()/2, y: cy.height()/2 } });
+});
+document.getElementById('fit').addEventListener('click', () => {
+  cy.animate({ fit: { padding: 60 }, duration: 500 });
+});
+</script>
+</body>
+</html>

@@ -677,6 +677,15 @@
   }
   .machine-btn:hover { background: #3634A3; }
   .machine-btn:active { transform: scale(0.96); }
+  .map-btn {
+    font-size: 13px; font-weight: 600; padding: 7px 14px;
+    background: #1D1D1F; color: #fff; border: none; border-radius: 8px;
+    cursor: pointer; text-decoration: none;
+    transition: background 0.15s, transform 0.1s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .map-btn:hover { background: #48484A; }
+  .map-btn:active { transform: scale(0.96); }
   .sec-summary {
     display: flex; flex-wrap: wrap; gap: 8px;
     padding: 12px 14px; background: #F9F9FB; border-radius: 10px;
@@ -860,6 +869,7 @@
     <div class="header-bar"></div>
     <div class="header-title-row">
       <h1>Meus Recursos no Claude</h1>
+      <a href="./mapa.html" class="map-btn" title="Mapa do ecossistema (graph view)">🗺️ Mapa</a>
       <button class="refresh-btn" id="refresh-btn" title="Buscar status ao vivo dos projetos">🔄 Atualizar</button>
       <button class="security-btn" id="security-btn" title="Auditoria de segurança dos apps online">🛡️ Auditar</button>
       <button class="machine-btn" id="machine-btn" title="Auditoria do seu computador (via Claude Code)">💻 Máquina</button>
