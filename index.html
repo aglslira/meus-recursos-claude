@@ -669,6 +669,14 @@
   .security-btn.has-warning:hover { background: #A96E00; }
   .security-btn.all-ok { background: #2E8B57; }
   .security-btn.all-ok:hover { background: #236B44; }
+  .machine-btn {
+    font-size: 13px; font-weight: 600; padding: 7px 14px;
+    background: #5856D6; color: #fff; border: none; border-radius: 8px;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .machine-btn:hover { background: #3634A3; }
+  .machine-btn:active { transform: scale(0.96); }
   .sec-summary {
     display: flex; flex-wrap: wrap; gap: 8px;
     padding: 12px 14px; background: #F9F9FB; border-radius: 10px;
@@ -853,7 +861,8 @@
     <div class="header-title-row">
       <h1>Meus Recursos no Claude</h1>
       <button class="refresh-btn" id="refresh-btn" title="Buscar status ao vivo dos projetos">🔄 Atualizar</button>
-      <button class="security-btn" id="security-btn" title="Auditoria de segurança completa">🛡️ Auditar</button>
+      <button class="security-btn" id="security-btn" title="Auditoria de segurança dos apps online">🛡️ Auditar</button>
+      <button class="machine-btn" id="machine-btn" title="Auditoria do seu computador (via Claude Code)">💻 Máquina</button>
     </div>
     <p>Clique em um card para explorar — André · abril 2026 <span class="refresh-ts" id="refresh-ts"></span></p>
   </header>
@@ -2867,6 +2876,64 @@ Em construção · revisão do produto.`,
       } finally {
         securityBtn.classList.remove('loading');
         securityBtn.textContent = '🛡️ Auditar';
+      }
+    });
+  }
+
+  // ── MACHINE AUDIT BUTTON ──────────────────────────────────────────────────
+  const machineBtn = document.getElementById('machine-btn');
+  if (machineBtn) {
+    machineBtn.addEventListener('click', () => {
+      const cmd = 'audita minha máquina';
+      const modal = document.getElementById('skillModal');
+      document.getElementById('modalIcon').textContent = '💻';
+      document.getElementById('modalIcon').className = 'skill-modal-icon i-tool';
+      document.getElementById('modalName').textContent = 'Auditoria da Máquina Local';
+      document.getElementById('modalTagline').textContent = 'Checa permissões, .env soltos, secrets e lixo no seu computador';
+      document.getElementById('modalBody').innerHTML = `
+        <div style="padding:4px 0;">
+          <p style="font-size:14px; line-height:1.6; color:#1C1C1E;">
+            Esta auditoria roda no seu computador via <strong>Claude Code</strong> (não no servidor).
+            Ela verifica:
+          </p>
+          <ul style="font-size:13px; line-height:1.7; color:#3A3A3C; padding-left:20px;">
+            <li>🔐 Permissões de arquivos de credencial (devem ser 600)</li>
+            <li>📁 Arquivos <code>.env</code> soltos em Desktop/Downloads</li>
+            <li>🔍 Padrões de secret (tokens GitHub, AWS, Stripe, etc.) em arquivos editáveis</li>
+            <li>🎫 Idade dos tokens CLI instalados (Vercel, Netlify, GitHub, npm)</li>
+            <li>🗑️ Lixo antigo ocupando disco (node_modules, builds velhos)</li>
+          </ul>
+          <div style="margin-top:20px; padding:14px; background:#F2F2F7; border-radius:10px;">
+            <p style="font-size:13px; font-weight:600; margin-bottom:8px;">Como rodar:</p>
+            <p style="font-size:13px; color:#3A3A3C; margin-bottom:10px;">
+              1. Copie o comando abaixo<br>
+              2. Cole na janela do Claude Code (chat) e envie
+            </p>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <code id="audita-cmd" style="flex:1; padding:8px 12px; background:#fff; border:1px solid #E5E5EA; border-radius:8px; font-size:13px;">${cmd}</code>
+              <button id="audita-copy-btn" style="padding:8px 14px; background:#5856D6; color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer;">Copiar</button>
+            </div>
+          </div>
+          <p style="font-size:12px; color:#8E8E93; margin-top:14px;">
+            Dica: depois de colar, o Claude vai rodar a skill <code>audita-maquina</code> e te mostrar o relatório com autocorreção automática das permissões.
+          </p>
+        </div>
+      `;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      const copyBtn = document.getElementById('audita-copy-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          navigator.clipboard.writeText(cmd).then(() => {
+            copyBtn.textContent = 'Copiado ✓';
+            copyBtn.style.background = '#2E8B57';
+            setTimeout(() => {
+              copyBtn.textContent = 'Copiar';
+              copyBtn.style.background = '#5856D6';
+            }, 1800);
+          });
+        });
       }
     });
   }
