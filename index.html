@@ -686,6 +686,52 @@
   }
   .map-btn:hover { background: #48484A; }
   .map-btn:active { transform: scale(0.96); }
+
+  /* Server status dot */
+  .server-dot {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; color: #AEAEB2; padding: 6px 10px;
+    border-radius: 8px; background: #F2F2F7; border: 1px solid #E5E5EA;
+    cursor: default; white-space: nowrap;
+  }
+  .server-dot .sdot {
+    width: 7px; height: 7px; border-radius: 50%; background: #AEAEB2;
+    transition: background 0.3s;
+  }
+  .server-dot.online .sdot { background: #34C759; }
+  .server-dot.online { color: #1D1D1F; }
+  .server-dot.offline .sdot { background: #FF3B30; }
+
+  /* Delete button on acc-items */
+  .btn-delete {
+    margin-left: auto; padding: 4px 8px; font-size: 15px;
+    background: none; border: none; cursor: pointer; opacity: 0.35;
+    border-radius: 6px; transition: opacity 0.15s, background 0.15s;
+    line-height: 1; flex-shrink: 0;
+  }
+  .btn-delete:hover { opacity: 1; background: #FEE2E2; }
+
+  /* Delete confirm modal */
+  .del-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 9999;
+    align-items: center; justify-content: center;
+  }
+  .del-overlay.open { display: flex; }
+  .del-modal {
+    background: #fff; border-radius: 16px; padding: 28px 24px;
+    max-width: 380px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .del-modal h3 { font-size: 17px; margin-bottom: 8px; }
+  .del-modal p { font-size: 13px; color: #6E6E73; margin-bottom: 18px; word-break: break-all; }
+  .del-modal code { font-size: 12px; background: #F2F2F7; padding: 6px 10px; border-radius: 6px; display: block; margin-bottom: 20px; }
+  .del-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .del-modal-actions button { padding: 8px 18px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .del-cancel { background: #F2F2F7; color: #1D1D1F; }
+  .del-cancel:hover { background: #E5E5EA; }
+  .del-confirm { background: #FF3B30; color: #fff; }
+  .del-confirm:hover { background: #C0392B; }
+  .del-confirm:disabled { opacity: 0.6; pointer-events: none; }
   .sec-summary {
     display: flex; flex-wrap: wrap; gap: 8px;
     padding: 12px 14px; background: #F9F9FB; border-radius: 10px;
@@ -912,6 +958,7 @@
       <button class="refresh-btn" id="refresh-btn" title="Buscar status ao vivo dos projetos">🔄 Atualizar</button>
       <button class="security-btn" id="security-btn" title="Auditoria de segurança dos apps online">🛡️ Auditar</button>
       <button class="machine-btn" id="machine-btn" title="Auditoria do seu computador (via Claude Code)">💻 Máquina</button>
+      <span class="server-dot offline" id="server-dot" title="Servidor local de deleção (node server.js)"><span class="sdot"></span><span id="server-label">servidor off</span></span>
     </div>
     <p>Clique em um card para explorar — André · abril 2026 <span class="refresh-ts" id="refresh-ts"></span></p>
   </header>
@@ -2101,6 +2148,20 @@
       </div>
       <div class="skill-modal-body" id="modalBody"></div>
       <div class="skill-modal-hint">Pressione Esc para fechar</div>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div class="del-overlay" id="delOverlay">
+    <div class="del-modal">
+      <h3>🗑️ Confirmar deleção</h3>
+      <p id="del-name" style="font-weight:600;color:#1D1D1F;margin-bottom:4px;"></p>
+      <code id="del-path"></code>
+      <p style="margin-bottom:20px;">Essa ação é <strong>irreversível</strong>. O arquivo será deletado do disco.</p>
+      <div class="del-modal-actions">
+        <button class="del-cancel" id="del-cancel">Cancelar</button>
+        <button class="del-confirm" id="del-confirm">Deletar</button>
+      </div>
     </div>
   </div>
 
@@ -3346,6 +3407,149 @@ Em construção · revisão do produto.`,
       document.querySelectorAll('#plans-toggle button').forEach(b => b.classList.toggle('active', b === btn));
       renderPlans();
     });
+  });
+
+  // ── SERVIDOR LOCAL DE DELEÇÃO ─────────────────────────────────────────────
+  const SERVER = 'http://localhost:3001';
+  const serverDot = document.getElementById('server-dot');
+  const serverLabel = document.getElementById('server-label');
+  let serverOnline = false;
+
+  async function checkServer() {
+    try {
+      const r = await fetch(SERVER + '/health', { signal: AbortSignal.timeout(1200) });
+      serverOnline = r.ok;
+    } catch {
+      serverOnline = false;
+    }
+    serverDot.className = 'server-dot ' + (serverOnline ? 'online' : 'offline');
+    serverLabel.textContent = serverOnline ? 'servidor on' : 'servidor off';
+  }
+  checkServer();
+  setInterval(checkServer, 8000);
+
+  // Modal de confirmação
+  const delOverlay  = document.getElementById('delOverlay');
+  const delNameEl   = document.getElementById('del-name');
+  const delPathEl   = document.getElementById('del-path');
+  const delConfirm  = document.getElementById('del-confirm');
+  const delCancel   = document.getElementById('del-cancel');
+  let pendingDelete = null; // { name, path, onSuccess }
+
+  function openDeleteModal(name, path, onSuccess) {
+    pendingDelete = { name, path, onSuccess };
+    delNameEl.textContent = name;
+    delPathEl.textContent = path;
+    delConfirm.disabled = false;
+    delConfirm.textContent = 'Deletar';
+    delOverlay.classList.add('open');
+  }
+
+  function closeDeleteModal() {
+    delOverlay.classList.remove('open');
+    pendingDelete = null;
+  }
+
+  delCancel.addEventListener('click', closeDeleteModal);
+  delOverlay.addEventListener('click', e => { if (e.target === delOverlay) closeDeleteModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && pendingDelete) closeDeleteModal(); });
+
+  delConfirm.addEventListener('click', async () => {
+    if (!pendingDelete) return;
+    if (!serverOnline) {
+      alert('O servidor local não está rodando.\n\nAbra um terminal e execute:\n\nnode ~/Documents/Claude/Projects/meus-recursos-claude/server.js');
+      return;
+    }
+    delConfirm.disabled = true;
+    delConfirm.textContent = 'Deletando…';
+    try {
+      const res = await fetch(SERVER + '/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: pendingDelete.path })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const cb = pendingDelete.onSuccess;
+        closeDeleteModal();
+        showToast('Deletado ✓');
+        if (cb) cb();
+      } else {
+        alert('Erro: ' + (data.error || 'falha desconhecida'));
+        closeDeleteModal();
+      }
+    } catch (err) {
+      alert('Não foi possível contactar o servidor local.\n\n' + err.message);
+      closeDeleteModal();
+    }
+  });
+
+  // Adiciona botão 🗑️ em cada acc-item de skill
+  function addSkillDeleteButtons() {
+    document.querySelectorAll('#panel-skills .acc-item[data-skill]').forEach(item => {
+      const skill = item.dataset.skill;
+      if (!skill || item.querySelector('.btn-delete')) return;
+      // Não oferece deleção para skills que são plugins (sem pasta local)
+      const localSkills = ['maxxima-anti-caos','sprint-educator','disc-assessment','disc-jovens',
+        'success-insights','softskills-assessments','mentoria','ideias-score','plano-mvp-prd',
+        'fazedor-de-aulas','conteudo-redes-sociais','brand-kit','audita-maquina'];
+      if (!localSkills.includes(skill)) return;
+      const btn = document.createElement('button');
+      btn.className = 'btn-delete';
+      btn.title = 'Deletar skill ' + skill;
+      btn.textContent = '🗑️';
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const path = '~/.claude/skills/' + skill;
+        openDeleteModal(skill, path, () => {
+          item.style.transition = 'opacity 0.3s';
+          item.style.opacity = '0';
+          setTimeout(() => item.remove(), 300);
+        });
+      });
+      item.querySelector('.acc-header').appendChild(btn);
+    });
+  }
+
+  // Adiciona botão 🗑️ em cada plan-item (injetado pelo renderPlans)
+  function addPlanDeleteButtons() {
+    document.querySelectorAll('.plan-item[data-plan-key]').forEach(item => {
+      if (item.querySelector('.btn-delete')) return;
+      const key = item.dataset.planKey;
+      const plan = PLANS_DATA.find(p => p.key === key);
+      if (!plan || !plan.path) return;
+      const btn = document.createElement('button');
+      btn.className = 'btn-delete';
+      btn.title = 'Deletar este plano';
+      btn.textContent = '🗑️';
+      btn.style.cssText = 'position:absolute;top:8px;right:8px;';
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        openDeleteModal(plan.title || key, plan.path, () => {
+          // Remove do array em memória e re-renderiza
+          const idx = PLANS_DATA.findIndex(p => p.key === key);
+          if (idx !== -1) PLANS_DATA.splice(idx, 1);
+          renderPlans();
+        });
+      });
+      item.style.position = 'relative';
+      item.appendChild(btn);
+    });
+  }
+
+  // Injeta botões após cada render
+  const origRenderPlans = renderPlans;
+  renderPlans = function() {
+    origRenderPlans();
+    setTimeout(addPlanDeleteButtons, 50);
+  };
+
+  // Injeta nas skills (painel já renderizado estaticamente)
+  addSkillDeleteButtons();
+
+  // Re-injeta nas plans quando o painel de planos abre
+  document.querySelector('.summary-card[data-target="planos"]')?.addEventListener('click', () => {
+    setTimeout(addPlanDeleteButtons, 150);
   });
 
 </script>
