@@ -101,11 +101,51 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Estado do sync
+  if (req.method === 'POST' && req.url === '/sync') {
+    if (syncRunning) {
+      return json(res, 200, { ok: true, status: 'running', message: 'Sync já em andamento...' });
+    }
+    syncRunning = true;
+    lastSyncResult = null;
+
+    const { spawn } = require('child_process');
+    const proc = spawn('/usr/local/bin/claude', [
+      '-p', 'rode a task atualiza-painel-claude',
+      '--dangerously-skip-permissions'
+    ], {
+      cwd: '/Users/andreschwambach/Documents/Claude/Projects/meus-recursos-claude',
+      env: { ...process.env, HOME: '/Users/andreschwambach' },
+      detached: false,
+      stdio: ['ignore', 'pipe', 'pipe']
+    });
+
+    proc.stdout.on('data', d => console.log('[SYNC]', d.toString().trim()));
+    proc.stderr.on('data', d => console.error('[SYNC ERR]', d.toString().trim()));
+
+    proc.on('close', (code) => {
+      syncRunning = false;
+      lastSyncResult = { code, time: Date.now(), ok: code === 0 };
+      console.log(`[SYNC] concluído com código ${code}`);
+    });
+
+    return json(res, 200, { ok: true, status: 'started' });
+  }
+
+  // GET /sync/status — poll para saber se terminou
+  if (req.method === 'GET' && req.url === '/sync/status') {
+    return json(res, 200, { running: syncRunning, lastResult: lastSyncResult });
+  }
+
   json(res, 404, { error: 'Rota não encontrada' });
 });
 
+// Estado global do sync (fora do handler)
+let syncRunning = false;
+let lastSyncResult = null;
+
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n🗑️  Servidor de deleção rodando em http://localhost:${PORT}`);
+  console.log(`\n🗑️  Servidor do painel rodando em http://localhost:${PORT}`);
   console.log(`   Zonas permitidas:`);
   ALLOWED_PREFIXES.forEach(p => console.log(`   • ${p}`));
   console.log(`\n   Mantenha este terminal aberto enquanto usar o painel.\n`);

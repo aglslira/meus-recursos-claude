@@ -677,6 +677,15 @@
   }
   .machine-btn:hover { background: #3634A3; }
   .machine-btn:active { transform: scale(0.96); }
+  .sync-btn {
+    font-size: 13px; font-weight: 600; padding: 7px 14px;
+    background: #34C759; color: #fff; border: none; border-radius: 8px;
+    cursor: pointer; transition: background 0.15s, transform 0.1s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .sync-btn:hover { background: #248A3D; }
+  .sync-btn:active { transform: scale(0.96); }
+  .sync-btn:disabled { background: #8E8E93; cursor: not-allowed; }
   .map-btn {
     font-size: 13px; font-weight: 600; padding: 7px 14px;
     background: #1D1D1F; color: #fff; border: none; border-radius: 8px;
@@ -958,6 +967,7 @@
       <button class="refresh-btn" id="refresh-btn" title="Buscar status ao vivo dos projetos">🔄 Atualizar</button>
       <button class="security-btn" id="security-btn" title="Auditoria de segurança dos apps online">🛡️ Auditar</button>
       <button class="machine-btn" id="machine-btn" title="Auditoria do seu computador (via Claude Code)">💻 Máquina</button>
+      <button class="sync-btn" id="syncBtn" onclick="triggerSync()" title="Sincroniza skills, planos e referências com os arquivos locais">⚡ Sincronizar</button>
       <span class="server-dot offline" id="server-dot" title="Servidor local de deleção (node server.js)"><span class="sdot"></span><span id="server-label">servidor off</span></span>
     </div>
     <p>Clique em um card para explorar — André · abril 2026 <span class="refresh-ts" id="refresh-ts"></span></p>
@@ -3213,6 +3223,49 @@ Em construção · revisão do produto.`,
         });
       }
     });
+  }
+
+  // ── SYNC BUTTON ───────────────────────────────────────────────────────────
+  async function triggerSync() {
+    const btn = document.getElementById('syncBtn');
+    btn.textContent = '⏳ Sincronizando...';
+    btn.disabled = true;
+    try {
+      const r = await fetch('http://localhost:3001/sync', { method: 'POST' });
+      const d = await r.json();
+      if (d.status === 'running') {
+        btn.textContent = '⏳ Já rodando...';
+        pollSyncStatus();
+      } else {
+        btn.textContent = '⏳ Aguardando...';
+        pollSyncStatus();
+      }
+    } catch {
+      btn.textContent = '❌ Servidor off';
+      btn.disabled = false;
+      setTimeout(() => { btn.textContent = '⚡ Sincronizar'; }, 3000);
+    }
+  }
+
+  function pollSyncStatus() {
+    const btn = document.getElementById('syncBtn');
+    const interval = setInterval(async () => {
+      try {
+        const r = await fetch('http://localhost:3001/sync/status');
+        const d = await r.json();
+        if (!d.running && d.lastResult) {
+          clearInterval(interval);
+          if (d.lastResult.ok) {
+            btn.textContent = '✅ Concluído!';
+            setTimeout(() => location.reload(), 2000);
+          } else {
+            btn.textContent = '⚠️ Erro no sync';
+            btn.disabled = false;
+            setTimeout(() => { btn.textContent = '⚡ Sincronizar'; btn.disabled = false; }, 4000);
+          }
+        }
+      } catch { /* servidor temporariamente ocupado — continua polling */ }
+    }, 5000);
   }
 
   // ── REFERENCES ────────────────────────────────────────────────────────────
